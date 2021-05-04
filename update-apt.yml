@@ -1,6 +1,6 @@
 ---
 - name: Update apt
-  hosts: localhost
+  hosts: vansibl401ubu
   become: yes
   become_user: root
   tasks:
@@ -23,21 +23,13 @@
       get_md5: no
     register: reboot_required_file
 
-  - name: If reboot required, send email
-    mail:
-      host: smtp.gmail.com
-      port: 587
-      username: "{{ lookup('env', 'SMTP_USERNAME') }}"
-      password: "{{ lookup('env', 'SMTP_PASSWORD') }}"
-      from: allen@shotover.com
-      to: alerts@shotover.com, allen@shotover.com
-      subject: Reboot required for {{ ansible_facts['hostname'] }}
-      body:
-        Hello,
-
-        The host {{ ansible_facts['hostname'] }} requires a reboot after updating apt. Please reboot the host at your earliest convenience.
-
-        Thank you,
-
-        Mr. Roboto
+  - name: If reboot required, post notification to Slack
+    uri:
+      headers:
+        Content-Type: 'application/json'
+      method: POST
+      body_format: json
+      body: '{"text":"{{ inventory_hostname }} needs a reboot"}'
+      url: "{{ lookup('env', 'ANSBL_WEBHOOK') }}"
     when: reboot_required_file.stat.exists
+    no_log: true
