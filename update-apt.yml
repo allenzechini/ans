@@ -1,6 +1,6 @@
 ---
 - name: Update apt and install required software
-  hosts: vansibl401ubu
+  hosts: all
   become: yes
   become_user: root
   vars:
