@@ -1,10 +1,10 @@
 ---
 - name: Update apt and install required software
-  hosts: all
+  hosts: ubuntu-servers
   become: yes
   become_user: root
   vars:
-    required_pkgs: [ 'htop', 'vim', 'net-tools', 'netplan.io' ]
+    required_pkgs: [ 'htop', 'vim', 'net-tools', 'netplan.io', 'clamav' ]
     # unnecessary_pkgs: [ 'TBD' ]
   tasks:
   - name: Update apt repo and cache
