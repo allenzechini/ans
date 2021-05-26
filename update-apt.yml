@@ -51,3 +51,7 @@
       url: "{{ lookup('env', 'ANSBL_WEBHOOK') }}"
     when: reboot_required_file.stat.exists
     no_log: true
+
+  # Run clamav signature updates and start clamav service
+  roles:
+    - geerlingguy.clamav
