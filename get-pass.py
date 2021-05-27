@@ -10,16 +10,18 @@ def is_logged_in():
     cmd = 'bw status'
     out = subprocess.run(cmd.split(), check=True, stdout=subprocess.PIPE)
     if 'unauthenticated' in out.stdout.decode('utf-8'):
-      print('Please perform the following steps:\n'
+      print('\nYou are not currently logged into Bitwarden on this host.\n\n'
+            'Please perform the following steps:\n'
             '  1) Login to your vault using \'bw login\',\n'
-            '  2) Set the environment variable BW_SESSION,\n'
-            '  3) Re-run your command')
+            '  2) Set the environment variable BW_SESSION with the given key,\n'
+            '  3) Re-run your command\n')
       sys.exit(1)
     elif 'locked' in out.stdout.decode('utf-8'):
-      print('Please perform the following steps:\n'
+      print('\nYou are currently locked out of Bitwarden on this host.\n\n'
+            'Please perform the following steps:\n'
             '  1) Unlock your vault using \'bw unlock\',\n'
-            '  2) Set the environment variable BW_SESSION,\n'
-            '  3) Then re-run your command')
+            '  2) Set the environment variable BW_SESSION with the given key,\n'
+            '  3) Then re-run your command\n')
       sys.exit(2)
   else:
     return True
