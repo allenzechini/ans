@@ -10,14 +10,16 @@ def is_logged_in():
     cmd = 'bw status'
     out = subprocess.run(cmd.split(), check=True, stdout=subprocess.PIPE)
     if 'unauthenticated' in out.stdout.decode('utf-8'):
-      print('Please login to your vault using \'bw login\', '
-            'set the environment variable BW_SESSION, '
-            'then re-run your command')
+      print('Please perform the following steps:\n'
+            '  1) Login to your vault using \'bw login\',\n'
+            '  2) Set the environment variable BW_SESSION,\n'
+            '  3) Re-run your command')
       sys.exit(1)
     elif 'locked' in out.stdout.decode('utf-8'):
-      print('Please unlock your vault using \'bw unlock\', '
-            'set the environment variable BW_SESSION, '
-            'then re-run your command')
+      print('Please perform the following steps:\n'
+            '  1) Unlock your vault using \'bw unlock\',\n'
+            '  2) Set the environment variable BW_SESSION,\n'
+            '  3) Then re-run your command')
       sys.exit(2)
   else:
     return True
