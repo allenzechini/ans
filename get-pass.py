@@ -37,6 +37,8 @@ def main():
   args = parser.parse_args()
 
   if is_logged_in():
+    sync = 'bw sync'
+    subprocess.run(sync.split(), check=True, stdout=subprocess.PIPE)
     print(get_p(args.item))
 
 if __name__ == '__main__':

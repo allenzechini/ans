@@ -1,7 +1,14 @@
 ---
 - name: Print hello world
   hosts: localhost
+  connection: local
+  roles:
+  - ansible-modules-bitwarden
+
   tasks:
-  - name: Print hello world
+  - name: Sync bitwarden vault
+    command: bw sync
+
+  - name: Output some bitwarden data
     debug:
-      msg: "Hello, world!"
+      msg: "{{ lookup('bitwarden', 'test-pw-3', field='test-field-1', custom_field=true) }}"
