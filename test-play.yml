@@ -33,10 +33,33 @@
       msg: "PW{{ item.item }} is {{ item.stdout }}"
     loop: "{{ pws.results }}"
 
-  - name: Create items with new pws
-    command: bw get template item | jq ".name=new-test-pw-{{ item.item }} | .login=$(bw get template item.login | jq '.username=new-test-pw-{{ item.item }} | .password={{ item.stdout }}')" | bw encode | bw create item 
+#  - name: Create item.login JSON
+#    command: bw get template item.login | jq '.username="new-test-pw-{{ item.item }}"' | jq '.password="{{ item.stdout }}"'
+#    loop: "{{ pws.results }}"
+#    register: login_json
+
+  - name: Create item.login JSON
+    shell: bw get template item.login | jq '.username="new-test-pw-{{ item.item }}"' | jq '.password="{{ item.stdout }}"'
     loop: "{{ pws.results }}"
-    register: entries
+    register: login_json
+
+  - name: Print login_json
+    debug:
+      var: login_json
+
+  - name: Create full JSON
+    shell: bw get template item | jq '.name="new-test-pw-{{ item.item.item }}" | .login="{{ item.stdout }}"' | bw encode | bw create item
+    loop: "{{ login_json.results }}"
+    register: full_json
+
+  - name: Print full_json
+    debug:
+      var: full_json
+
+#  - name: Create items with new pws
+#    command: bw get template item | jq ".name=new-test-pw-{{ item.item }} | .login={{ login_json.results.stdout }}" | bw encode | bw create item 
+#    loop: "{{ pws.results }}"
+#    register: entries
 
 #  - name: List new bw entries
 #    debug:
