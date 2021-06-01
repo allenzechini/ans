@@ -1,0 +1,40 @@
+---
+- name: Rotate passwords for user accounts
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  roles:
+  - ansible-modules-bitwarden
+
+  tasks:
+  - name: Sync bitwarden vault
+    command: bw sync
+
+  - name: Generate passwords
+    command: bw generate -ulns --length 32
+    with_sequence: count=4
+    register: pws
+
+  - name: Print pws data
+    debug:
+      msg: "PW{{ item.item }} is {{ item.stdout }}"
+    loop: "{{ pws.results }}"
+
+  - name: Create item.login JSON
+    shell: bw get template item.login | jq '.username="new-test-pw-{{ item.item }}"' | jq '.password="{{ item.stdout }}"'
+    loop: "{{ pws.results }}"
+    register: login_json
+
+  - name: Print login_json
+    debug:
+      var: login_json
+
+  - name: Create full JSON
+    shell: bw get template item | jq '.name="new-test-pw-{{ item.item.item }}" | .login="{{ item.stdout }}"' | bw encode | bw create item
+    loop: "{{ login_json.results }}"
+    register: full_json
+
+  - name: Print full_json
+    debug:
+      var: full_json
+
