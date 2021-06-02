@@ -30,7 +30,7 @@
       var: login_json
 
   - name: Create full JSON
-    shell: bw get template item | jq '.name="new-test-pw-{{ item.item.item }}" | .login="{{ item.stdout }}"' | bw encode | bw create item
+    shell: bw get template item | jq '.name="new-test-pw-{{ item.item.item }}" | .login="{{ item.stdout_lines }}"' | bw encode | bw create item
     loop: "{{ login_json.results }}"
     register: full_json
 
