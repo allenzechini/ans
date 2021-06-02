@@ -3,38 +3,93 @@
   hosts: localhost
   connection: local
   gather_facts: false
-  roles:
-  - ansible-modules-bitwarden
-
+  vars:
+    userlist: [ 'testuser1', 'testuser2', 'testuser3', 'testuser4' ]
   tasks:
-  - name: Sync bitwarden vault
+  - name: Get latest Bitwarden content
     command: bw sync
 
   - name: Generate passwords
-    command: bw generate -ulns --length 32
+    command: 
+      #cmd: bw generate -ulns --length 32
+      cmd: bw generate -uln --length 32
+      strip_empty_ends: yes
     with_sequence: count=4
     register: pws
 
-  - name: Print pws data
+  - name: Print pws
     debug:
-      msg: "PW{{ item.item }} is {{ item.stdout }}"
+      var: item
     loop: "{{ pws.results }}"
 
-  - name: Create item.login JSON
-    shell: bw get template item.login | jq '.username="new-test-pw-{{ item.item }}"' | jq '.password="{{ item.stdout }}"'
-    loop: "{{ pws.results }}"
-    register: login_json
+  - name: Get login template and substitute
+    shell:
+      cmd: bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"'
+      #stdin: bw get template item.login
+    loop:
+    - { username: "{{ userlist.0 }}", pgen: "{{ pws.results.0.stdout }}" }
+    - { username: "{{ userlist.1 }}", pgen: "{{ pws.results.1.stdout }}" }
+    - { username: "{{ userlist.2 }}", pgen: "{{ pws.results.2.stdout }}" }
+    - { username: "{{ userlist.3 }}", pgen: "{{ pws.results.3.stdout }}" }
+    register: full_jsons
 
-  - name: Print login_json
+  - name: Print JSONs
     debug:
-      var: login_json
+      var: item
+    loop: "{{ full_jsons.results }}"
 
-  - name: Create full JSON
-    shell: bw get template item | jq '.name="new-test-pw-{{ item.item.item }}" | .login="{{ item.stdout_lines }}"' | bw encode | bw create item
-    loop: "{{ login_json.results }}"
-    register: full_json
+#  - name: Create bw_items
+#    shell:
+#      cmd: bw encode | bw create item
+#      stdin: '"{{ item }}"'
+#    loop:
+#    - "{{ bw_items.0 | string }}"
+#    - "{{ bw_items.1 | string }}"
+#    - "{{ bw_items.2 | string }}"
+#    - "{{ bw_items.3 | string }}"
 
-  - name: Print full_json
-    debug:
-      var: full_json
-
+#  - name: Initiate bw item JSONs
+#    set_fact: 
+#      bw_items: []
+#
+#  - name: Create bw item JSONs
+#    set_fact: 
+#      bw_items: "{{ bw_items +
+#                    [{ 'organizationId': 'null',
+#                       'folderId': 'null',
+#                       'type': 1,
+#                       'name': 'item.username',
+#                       'notes': '',
+#                       'favorite': false,
+#                       'fields': [],
+#                       'login': {
+#                         'uris': [],
+#                         'username': 'item.username',
+#                         'password': 'item.pgen',
+#                         'totp': 'null' 
+#                       },
+#                       'secureNote': 'null',
+#                       'card': 'null',
+#                       'identity': 'null'
+#                     }] }}"
+#    loop:
+#    - { username: testuser1, pgen: "{{ pws.results.0.stdout }}" }
+#    - { username: testuser2, pgen: "{{ pws.results.1.stdout }}" }
+#    - { username: testuser3, pgen: "{{ pws.results.2.stdout }}" }
+#    - { username: testuser4, pgen: "{{ pws.results.3.stdout }}" }
+#
+#  - name: Print JSONs
+#    debug:
+#      var: item | string
+#    loop: "{{ bw_items }}"
+#
+#  - name: Create bw_items
+#    shell:
+#      cmd: bw encode | bw create item
+#      stdin: '"{{ item }}"'
+#    loop:
+#    - "{{ bw_items.0 | string }}"
+#    - "{{ bw_items.1 | string }}"
+#    - "{{ bw_items.2 | string }}"
+#    - "{{ bw_items.3 | string }}"
+#
