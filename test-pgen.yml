@@ -25,28 +25,41 @@
   - name: Get login template and substitute
     shell:
       cmd: bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"'
-      #stdin: bw get template item.login
     loop:
     - { username: "{{ userlist.0 }}", pgen: "{{ pws.results.0.stdout }}" }
     - { username: "{{ userlist.1 }}", pgen: "{{ pws.results.1.stdout }}" }
     - { username: "{{ userlist.2 }}", pgen: "{{ pws.results.2.stdout }}" }
     - { username: "{{ userlist.3 }}", pgen: "{{ pws.results.3.stdout }}" }
+    register: login_jsons
+
+  - name: Print login JSONs
+    debug:
+      var: item
+    loop: "{{ login_jsons.results }}"
+
+  - name: Get full item template and substitute
+    shell:
+      cmd: bw get template item | jq '.name="{{ item.username }}" | .login="{{ item.login }}"'
+    loop:
+    - { username: "{{ userlist.0 }}", login: "{{ login_jsons.results.0.stdout }}" }
+    - { username: "{{ userlist.1 }}", login: "{{ login_jsons.results.1.stdout }}" }
+    - { username: "{{ userlist.2 }}", login: "{{ login_jsons.results.2.stdout }}" }
+    - { username: "{{ userlist.3 }}", login: "{{ login_jsons.results.3.stdout }}" }
     register: full_jsons
 
-  - name: Print JSONs
+  - name: Print full JSONs
     debug:
       var: item
     loop: "{{ full_jsons.results }}"
 
-#  - name: Create bw_items
+#  - name: Create items
 #    shell:
-#      cmd: bw encode | bw create item
-#      stdin: '"{{ item }}"'
+#      cmd: echo "{{ item }}" | bw encode | bw create item
 #    loop:
-#    - "{{ bw_items.0 | string }}"
-#    - "{{ bw_items.1 | string }}"
-#    - "{{ bw_items.2 | string }}"
-#    - "{{ bw_items.3 | string }}"
+#    - "{{ full_jsons.results.0.stdout }}"
+#    - "{{ full_jsons.results.1.stdout }}"
+#    - "{{ full_jsons.results.2.stdout }}"
+#    - "{{ full_jsons.results.3.stdout }}"
 
 #  - name: Initiate bw item JSONs
 #    set_fact: 
@@ -55,22 +68,22 @@
 #  - name: Create bw item JSONs
 #    set_fact: 
 #      bw_items: "{{ bw_items +
-#                    [{ 'organizationId': 'null',
-#                       'folderId': 'null',
-#                       'type': 1,
-#                       'name': 'item.username',
-#                       'notes': '',
-#                       'favorite': false,
-#                       'fields': [],
-#                       'login': {
-#                         'uris': [],
-#                         'username': 'item.username',
-#                         'password': 'item.pgen',
-#                         'totp': 'null' 
+#                    [{ \"organizationId\": \"null\",
+#                       \"folderId\": \"null\",
+#                       \"type\": 1,
+#                       \"name\": item.username,
+#                       \"notes\": \"\",
+#                       \"favorite\": false,
+#                       \"fields\": [],
+#                       \"login\": {
+#                         \"uris\": [],
+#                         \"username\": item.username,
+#                         \"password\": item.pgen,
+#                         \"totp\": \"null\" 
 #                       },
-#                       'secureNote': 'null',
-#                       'card': 'null',
-#                       'identity': 'null'
+#                       \"secureNote\": \"null\",
+#                       \"card\": \"null\",
+#                       \"identity\": \"null\"
 #                     }] }}"
 #    loop:
 #    - { username: testuser1, pgen: "{{ pws.results.0.stdout }}" }
@@ -80,16 +93,15 @@
 #
 #  - name: Print JSONs
 #    debug:
-#      var: item | string
+#      var: item
 #    loop: "{{ bw_items }}"
 #
 #  - name: Create bw_items
 #    shell:
-#      cmd: bw encode | bw create item
-#      stdin: '"{{ item }}"'
+#      cmd: echo "{{ item }}" | bw encode | bw create item
 #    loop:
-#    - "{{ bw_items.0 | string }}"
-#    - "{{ bw_items.1 | string }}"
-#    - "{{ bw_items.2 | string }}"
-#    - "{{ bw_items.3 | string }}"
+#    - "{{ bw_items.0 | to_json }}"
+#    - "{{ bw_items.1 | to_json }}"
+#    - "{{ bw_items.2 | to_json }}"
+#    - "{{ bw_items.3 | to_json }}"
 #
