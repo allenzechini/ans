@@ -4,8 +4,12 @@
   become: yes
   become_user: root
   vars:
-    required_pkgs: [ 'htop', 'vim', 'net-tools', 'netplan.io', 'clamav' ]
+    required_pkgs: [ 'htop', 'vim', 'net-tools', 'netplan.io', 'clamav', 'python3', 'python3-pip' ]
     # unnecessary_pkgs: [ 'TBD' ]
+
+  roles:
+    - geerlingguy.clamav
+
   tasks:
   - name: Update apt repo and cache
     apt:
@@ -52,6 +56,3 @@
     when: reboot_required_file.stat.exists
     no_log: true
 
-  # Run clamav signature updates and start clamav service
-  roles:
-    - geerlingguy.clamav
