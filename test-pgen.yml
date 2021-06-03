@@ -34,7 +34,7 @@
 
   - name: Print login JSONs
     debug:
-      var: item
+      var: item.stdout_lines | to_json
     loop: "{{ login_jsons.results }}"
 
   - name: Get full item template and substitute
@@ -49,7 +49,7 @@
 
   - name: Print full JSONs
     debug:
-      var: item
+      var: item.stdout | to_json
     loop: "{{ full_jsons.results }}"
 
 #  - name: Create items
