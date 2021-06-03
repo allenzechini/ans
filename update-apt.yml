@@ -50,7 +50,7 @@
       body_format: json
       body: 
         '{
-            "text": "EXTRAY! EXTRAY! READ ALL ABOUT IT! Host {{ inventory_hostname }} needs a reboot!"
+            "text": "{{ ansible_date_time.iso8601_micro }} | EXTRAY! EXTRAY! READ ALL ABOUT IT! Host {{ inventory_hostname }} needs a reboot!"
          }'
       url: "{{ lookup('env', 'ANSBL_WEBHOOK') }}"
     when: reboot_required_file.stat.exists
