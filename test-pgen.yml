@@ -35,7 +35,7 @@
 
   - name: Get item templates, substitute, and create
     shell:
-      cmd: bw get template item | jq ".name=\"{{ item.username }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw create item
+      cmd: bw get template item | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw create item
     loop:
     - { username: "{{ userlist.0 }}", pgen: "{{ pws.results.0.stdout }}" }
     - { username: "{{ userlist.1 }}", pgen: "{{ pws.results.1.stdout }}" }
