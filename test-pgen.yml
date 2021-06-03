@@ -11,12 +11,12 @@
     command: bw sync
 
   - name: Check for duplicate users
-     command: bw get username "{{ item }}"
-     loop: 
-       - "{{ userlist.0 }}"
-       - "{{ userlist.1 }}"
-       - "{{ userlist.2 }}"
-       - "{{ userlist.3 }}"
+    command: bw get username "{{ item }}"
+    loop: 
+    - "{{ userlist.0 }}"
+    - "{{ userlist.1 }}"
+    - "{{ userlist.2 }}"
+    - "{{ userlist.3 }}"
 
   - name: Generate passwords
     command: 
