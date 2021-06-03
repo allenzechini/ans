@@ -1,0 +1,39 @@
+---
+- name: Rotate passwords for user accounts
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: true
+  vars_prompt:
+  - name: username
+    prompt: username
+    private: no
+
+  - name: password
+    prompt: password
+    private: yes
+    encrypt: sha512_crypt
+    confirm: yes
+
+  tasks:
+  - name: Update user
+    user:
+      name: "{{ username }}"
+      password: "{{ password }}"
+      update_password: always
+    register: update_status
+    ignore_errors: true
+
+  - name: Print update_status
+    debug:
+      var: update_status
+
+  - name: Print update msg
+    debug:
+      msg: "{{ username }}'s password has been updated successfully"
+    when: update_status is succeeded
+
+  - name: Print failed msg
+    debug:
+      msg: "{{ username }}'s password was not updated"
+    when: update_status is failed

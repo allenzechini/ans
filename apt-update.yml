@@ -1,0 +1,58 @@
+---
+- name: Update apt and install required software
+  hosts: ubuntu-servers
+  become: yes
+  become_user: root
+  vars:
+    required_pkgs: [ 'htop', 'vim', 'net-tools', 'netplan.io', 'clamav', 'python3', 'python3-pip' ]
+    # unnecessary_pkgs: [ 'TBD' ]
+
+  roles:
+    - geerlingguy.clamav
+
+  tasks:
+  - name: Update apt repo and cache
+    apt:
+      update_cache: yes
+      cache_valid_time: 3600
+
+  - name: Upgrade all packages on servers
+    apt:
+      upgrade: full
+
+  - name: Remove unused packages
+    apt:
+      autoremove: yes
+
+  - name: Install required software
+    apt:
+      name: "{{ item }}"
+      state: present
+    loop: "{{ required_pkgs }}"
+
+#  - name: Remove unnecessary software
+#    apt:
+#      name: "{{ item }}"
+#      state: absent
+#    loop: "{{ unnecessary_pkgs }}"
+
+  - name: Check if reboot is required
+    stat:
+      path: /var/run/reboot-required
+      get_md5: no
+    register: reboot_required_file
+
+  - name: If reboot required, post notification to Slack
+    uri:
+      headers:
+        Content-Type: 'application/json'
+      method: POST
+      body_format: json
+      body: 
+        '{
+            "text": "{{ ansible_date_time.iso8601_micro }} | EXTRAY! EXTRAY! READ ALL ABOUT IT! Host {{ inventory_hostname }} needs a reboot!"
+         }'
+      url: "{{ lookup('env', 'ANSBL_WEBHOOK') }}"
+    when: reboot_required_file.stat.exists
+    no_log: true
+
