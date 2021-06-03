@@ -9,10 +9,17 @@
   - name: Get latest Bitwarden content
     command: bw sync
 
+  - name: Check for duplicate users
+    command: bw get username "{{ item }}"
+    loop: 
+    - "{{ userlist.0 }}"
+    - "{{ userlist.1 }}"
+    - "{{ userlist.2 }}"
+    - "{{ userlist.3 }}"
+
   - name: Generate passwords
     command: 
-      #cmd: bw generate -ulns --length 32
-      cmd: bw generate -uln --length 32
+      cmd: bw generate -uln --length 128
       strip_empty_ends: yes
     with_sequence: count=4
     register: pws
@@ -20,7 +27,11 @@
   - name: Print pws
     debug:
       var: item
-    loop: "{{ pws.results }}"
+    loop:
+    - "{{ pws.results.0.stdout }}"
+    - "{{ pws.results.1.stdout }}"
+    - "{{ pws.results.2.stdout }}"
+    - "{{ pws.results.3.stdout }}"
 
   - name: Get item templates, substitute, and create
     shell:
