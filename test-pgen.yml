@@ -107,8 +107,7 @@
 
 # Play #2
 - name: Rotate
-  hosts: vrepo101ubu
-  #hosts: all
+  hosts: all
   become: true
   gather_facts: true
   tasks:
