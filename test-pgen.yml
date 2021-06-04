@@ -29,7 +29,7 @@
     register: user_exists
     failed_when: '"More" in user_exists.stderr'
     changed_when: false
-    #no_log: true
+    no_log: true
 
   - name: Generate passwords
     command: 
@@ -37,7 +37,7 @@
       strip_empty_ends: yes
     with_sequence: count=4
     register: pws
-    #no_log: true
+    no_log: true
 
   # Create section
   - name: Get item templates, substitute, and create
@@ -46,7 +46,7 @@
     loop:
     - { username: "{{ userlist.0 }}", pgen: "{{ pws.results.0.stdout }}" }
     when: '"Not found" in user_exists.results.0.stderr'
-    #no_log: true
+    no_log: true
 
   - name: Get item templates, substitute, and create
     shell:
@@ -54,7 +54,7 @@
     loop:
     - { username: "{{ userlist.1 }}", pgen: "{{ pws.results.1.stdout }}" }
     when: '"Not found" in user_exists.results.1.stderr'
-    #no_log: true
+    no_log: true
 
   - name: Get item templates, substitute, and create
     shell:
@@ -62,7 +62,7 @@
     loop:
     - { username: "{{ userlist.2 }}", pgen: "{{ pws.results.2.stdout }}" }
     when: '"Not found" in user_exists.results.2.stderr'
-    #no_log: true
+    no_log: true
 
   - name: Get item templates, substitute, and create
     shell:
@@ -70,7 +70,7 @@
     loop:
     - { username: "{{ userlist.3 }}", pgen: "{{ pws.results.3.stdout }}" }
     when: '"Not found" in user_exists.results.3.stderr'
-    #no_log: true
+    no_log: true
 
   # Edit section
   - name: Get item id, substitute, and edit
@@ -79,7 +79,7 @@
     loop:
     - { username: "{{ userlist.0 }}", pgen: "{{ pws.results.0.stdout }}", bw_item: "{{ user_exists.results.0.stdout }}" }
     when: '"Not found" not in user_exists.results.0.stderr'
-    #no_log: true
+    no_log: true
 
   - name: Get item id, substitute, and edit
     shell:
@@ -87,7 +87,7 @@
     loop:
     - { username: "{{ userlist.1 }}", pgen: "{{ pws.results.1.stdout }}", bw_item: "{{ user_exists.results.1.stdout }}" }
     when: '"Not found" not in user_exists.results.1.stderr'
-    #no_log: true
+    no_log: true
 
   - name: Get item id, substitute, and edit
     shell:
@@ -95,7 +95,7 @@
     loop:
     - { username: "{{ userlist.2 }}", pgen: "{{ pws.results.2.stdout }}", bw_item: "{{ user_exists.results.2.stdout }}" }
     when: '"Not found" not in user_exists.results.2.stderr'
-    #no_log: true
+    no_log: true
 
   - name: Get item id, substitute, and edit
     shell:
@@ -103,12 +103,13 @@
     loop:
     - { username: "{{ userlist.3 }}", pgen: "{{ pws.results.3.stdout }}", bw_item: "{{ user_exists.results.3.stdout }}" }
     when: '"Not found" not in user_exists.results.3.stderr'
-    #no_log: true
+    no_log: true
 
 # Play #2
 - name: Rotate
   hosts: vrepo101ubu
   #hosts: all
+  become: true
   gather_facts: true
   tasks:
   - name: Update user
@@ -123,7 +124,7 @@
     - { username: "{{ hostvars['localhost']['userlist'].3 }}", pgen: "{{ hostvars['localhost']['pws'].results.3.stdout }}" }
     register: update_status
     ignore_errors: true
-    #no_log: true
+    no_log: true
 
   - name: Print update msg
     debug:
@@ -134,7 +135,7 @@
     - "{{ hostvars['localhost']['userlist'].2 }}"
     - "{{ hostvars['localhost']['userlist'].3 }}"
     when: update_status is succeeded
-    #no_log: true
+    no_log: true
 
   - name: Print failed msg
     debug:
@@ -145,5 +146,5 @@
     - "{{ hostvars['localhost']['userlist'].2 }}"
     - "{{ hostvars['localhost']['userlist'].3 }}"
     when: update_status is failed
-    #no_log: true
+    no_log: true
 
