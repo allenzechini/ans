@@ -46,6 +46,7 @@
     loop:
     - { username: "{{ userlist.0 }}", pgen: "{{ pws.results.0.stdout }}" }
     when: '"Not found" in user_exists.results.0.stderr'
+    #no_log: true
 
   - name: Get item templates, substitute, and create
     shell:
@@ -53,6 +54,7 @@
     loop:
     - { username: "{{ userlist.1 }}", pgen: "{{ pws.results.1.stdout }}" }
     when: '"Not found" in user_exists.results.1.stderr'
+    #no_log: true
 
   - name: Get item templates, substitute, and create
     shell:
@@ -60,6 +62,7 @@
     loop:
     - { username: "{{ userlist.2 }}", pgen: "{{ pws.results.2.stdout }}" }
     when: '"Not found" in user_exists.results.2.stderr'
+    #no_log: true
 
   - name: Get item templates, substitute, and create
     shell:
@@ -67,6 +70,7 @@
     loop:
     - { username: "{{ userlist.3 }}", pgen: "{{ pws.results.3.stdout }}" }
     when: '"Not found" in user_exists.results.3.stderr'
+    #no_log: true
 
   # Edit section
   - name: Get item id, substitute, and edit
@@ -75,6 +79,7 @@
     loop:
     - { username: "{{ userlist.0 }}", pgen: "{{ pws.results.0.stdout }}", bw_item: "{{ user_exists.results.0.stdout }}" }
     when: '"Not found" not in user_exists.results.0.stderr'
+    #no_log: true
 
   - name: Get item id, substitute, and edit
     shell:
@@ -82,6 +87,7 @@
     loop:
     - { username: "{{ userlist.1 }}", pgen: "{{ pws.results.1.stdout }}", bw_item: "{{ user_exists.results.1.stdout }}" }
     when: '"Not found" not in user_exists.results.1.stderr'
+    #no_log: true
 
   - name: Get item id, substitute, and edit
     shell:
@@ -89,6 +95,7 @@
     loop:
     - { username: "{{ userlist.2 }}", pgen: "{{ pws.results.2.stdout }}", bw_item: "{{ user_exists.results.2.stdout }}" }
     when: '"Not found" not in user_exists.results.2.stderr'
+    #no_log: true
 
   - name: Get item id, substitute, and edit
     shell:
@@ -96,6 +103,7 @@
     loop:
     - { username: "{{ userlist.3 }}", pgen: "{{ pws.results.3.stdout }}", bw_item: "{{ user_exists.results.3.stdout }}" }
     when: '"Not found" not in user_exists.results.3.stderr'
+    #no_log: true
 
 # Play #2
 - name: Rotate
@@ -106,7 +114,7 @@
   - name: Update user
     user:
       name: "{{ item.username }}"
-      password: "{{ item.pgen | password_hash('sha512' 65534 | random(seed=inventory_hostname) | string) }}"
+      password: "{{ item.pgen | password_hash('sha512', 65534 | random(seed=inventory_hostname) | string) }}"
       update_password: always
     loop:
     - { username: "{{ hostvars['localhost']['userlist'].0 }}", pgen: "{{ hostvars['localhost']['pws'].results.0.stdout }}" }
