@@ -1,4 +1,5 @@
 ---
+# Play #1
 - name: Generate new BitWarden items for new passwords
   hosts: localhost
   connection: local
@@ -7,16 +8,36 @@
   vars:
     userlist: [ 'testuser1', 'testuser2', 'testuser3', 'testuser4' ]
   tasks:
+  - name: Check bw status
+    command: bw status
+    register: status
+    failed_when:  '"unlocked" not in status.stdout'
+    changed_when: false
+
   - name: Get latest Bitwarden content
     command: bw sync
 
-  - name: Check for duplicate users
-    command: bw get username "{{ item }}"
+  - name: Check for existing user entries
+    command: bw get item "{{ item }}"
     loop: 
     - "{{ userlist.0 }}"
     - "{{ userlist.1 }}"
     - "{{ userlist.2 }}"
     - "{{ userlist.3 }}"
+    register: user_exists
+    failed_when: '"More" in user_exists.stderr'
+    changed_when: false
+    #no_log: true
+
+#  - name: Print items
+#    debug:
+#      #var: item
+#      msg: "{{ item.name }} has ID: {{ item.id }}"
+#    loop:
+#    - "{{ user_exists.results.0.stdout }}"
+#    - "{{ user_exists.results.1.stdout }}"
+#    - "{{ user_exists.results.2.stdout }}"
+#    - "{{ user_exists.results.3.stdout }}"
 
   - name: Generate passwords
     command: 
@@ -25,69 +46,101 @@
     with_sequence: count=4
     register: pws
 
-  - name: Print pws
-    debug:
-      var: item
-    loop:
-    - "{{ pws.results.0.stdout }}"
-    - "{{ pws.results.1.stdout }}"
-    - "{{ pws.results.2.stdout }}"
-    - "{{ pws.results.3.stdout }}"
-
+  # Create section
   - name: Get item templates, substitute, and create
     shell:
       cmd: bw get template item | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw create item
     loop:
     - { username: "{{ userlist.0 }}", pgen: "{{ pws.results.0.stdout }}" }
+    when: '"Not found" in user_exists.results.0.stderr'
+
+  - name: Get item templates, substitute, and create
+    shell:
+      cmd: bw get template item | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw create item
+    loop:
     - { username: "{{ userlist.1 }}", pgen: "{{ pws.results.1.stdout }}" }
+    when: '"Not found" in user_exists.results.1.stderr'
+
+  - name: Get item templates, substitute, and create
+    shell:
+      cmd: bw get template item | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw create item
+    loop:
     - { username: "{{ userlist.2 }}", pgen: "{{ pws.results.2.stdout }}" }
+    when: '"Not found" in user_exists.results.2.stderr'
+
+  - name: Get item templates, substitute, and create
+    shell:
+      cmd: bw get template item | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw create item
+    loop:
     - { username: "{{ userlist.3 }}", pgen: "{{ pws.results.3.stdout }}" }
-    register: long_jsons
+    when: '"Not found" in user_exists.results.3.stderr'
 
-#  - name: Get info
-#    shell:
-#      cmd: bw get password "{{ item }}"
-#    loop:
-#    - "{{ userlist }}"
-#    register: testuser_pws
-#
-#  - name: Print info
-#    debug:
-#      var: item.stdout
-#    loop: "{{ testuser_pws.results }}"
+  # Edit section
+  - name: Get item id, substitute, and edit
+    shell:
+      cmd: bw get item "{{ item.userid | quote }}" | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw edit item "{{ item.userid | quote }}"
+    loop:
+    - { username: "{{ userlist.0 }}", pgen: "{{ pws.results.0.stdout }}", userid: "{{ user_exists.results.0.stdout }}" }
+    when: '"Not found" not in user_exists.results.0.stderr'
 
-#  - name: Get full item template and substitute
-#    shell:
-#      cmd: bw get template item | jq '.name="{{ item.username }}" | .login="{{ item.login }}"'
-#    loop:
-#    - { username: "{{ userlist.0 }}", login: "{{ login_jsons.results.0.stdout }}" }
-#    - { username: "{{ userlist.1 }}", login: "{{ login_jsons.results.1.stdout }}" }
-#    - { username: "{{ userlist.2 }}", login: "{{ login_jsons.results.2.stdout }}" }
-#    - { username: "{{ userlist.3 }}", login: "{{ login_jsons.results.3.stdout }}" }
-#    register: full_jsons
-#
-#  - name: Print full JSONs
-#    debug:
-#      var: item.stdout | to_json
-#    loop: "{{ full_jsons.results }}"
-#
-#  - name: Create items
-#    shell:
-#      cmd: echo "{{ item }}" | bw encode
-#    loop:
-#    - "{{ full_jsons.results.0.stdout_lines }}"
-#    - "{{ full_jsons.results.1.stdout_lines }}"
-#    - "{{ full_jsons.results.2.stdout_lines }}"
-#    - "{{ full_jsons.results.3.stdout_lines }}"
-#    register: encoded_jsons
-#
-#  - name: Print full JSONs
-#    debug:
-#      var: item.stdout
-#    loop: "{{ encoded_jsons.results }}"
+  - name: Get item id, substitute, and edit
+    shell:
+      cmd: bw get item "{{ item.userid | quote }}" | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw edit item "{{ item.userid | quote }}"
+    loop:
+    - { username: "{{ userlist.1 }}", pgen: "{{ pws.results.1.stdout }}", userid: "{{ user_exists.results.1.stdout }}" }
+    when: '"Not found" not in user_exists.results.1.stderr'
 
+  - name: Get item id, substitute, and edit
+    shell:
+      cmd: bw get item "{{ item.userid | quote }}" | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw edit item "{{ item.userid | quote }}"
+    loop:
+    - { username: "{{ userlist.2 }}", pgen: "{{ pws.results.2.stdout }}", userid: "{{ user_exists.results.2.stdout }}" }
+    when: '"Not found" not in user_exists.results.2.stderr'
+
+  - name: Get item id, substitute, and edit
+    shell:
+      cmd: bw get item "{{ item.userid | quote }}" | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw edit item "{{ item.userid | quote }}"
+    loop:
+    - { username: "{{ userlist.3 }}", pgen: "{{ pws.results.3.stdout }}", userid: "{{ user_exists.results.3.stdout }}" }
+    when: '"Not found" not in user_exists.results.3.stderr'
+
+# Play #2
 #- name: Rotate passwords
 #  hosts: all
 #  gather_facts: false
 #  tasks:
 #  - name: TBD
+#  vars_prompt:
+#  - name: username
+#    prompt: username
+#    private: no
+#
+#  - name: password
+#    prompt: password
+#    private: yes
+#    encrypt: sha512_crypt
+#    confirm: yes
+#
+#  tasks:
+#  - name: Update user
+#    user:
+#      name: "{{ username }}"
+#      password: "{{ password }}"
+#      update_password: always
+#    register: update_status
+#    ignore_errors: true
+#
+#  - name: Print update_status
+#    debug:
+#      var: update_status
+#
+#  - name: Print update msg
+#    debug:
+#      msg: "{{ username }}'s password has been updated successfully"
+#    when: update_status is succeeded
+#
+#  - name: Print failed msg
+#    debug:
+#      msg: "{{ username }}'s password was not updated"
+#    when: update_status is failed
+#
