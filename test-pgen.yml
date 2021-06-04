@@ -95,42 +95,40 @@
     when: '"Not found" not in user_exists.results.3.stderr'
 
 # Play #2
-#- name: Rotate passwords
-#  hosts: all
-#  gather_facts: false
-#  tasks:
-#  - name: TBD
-#  vars_prompt:
-#  - name: username
-#    prompt: username
-#    private: no
-#
-#  - name: password
-#    prompt: password
-#    private: yes
-#    encrypt: sha512_crypt
-#    confirm: yes
-#
-#  tasks:
-#  - name: Update user
-#    user:
-#      name: "{{ username }}"
-#      password: "{{ password }}"
-#      update_password: always
-#    register: update_status
-#    ignore_errors: true
-#
-#  - name: Print update_status
-#    debug:
-#      var: update_status
-#
-#  - name: Print update msg
-#    debug:
-#      msg: "{{ username }}'s password has been updated successfully"
-#    when: update_status is succeeded
-#
-#  - name: Print failed msg
-#    debug:
-#      msg: "{{ username }}'s password was not updated"
-#    when: update_status is failed
-#
+- name: Rotate passwords
+  hosts: all
+  gather_facts: false
+  tasks:
+  - name: Update user
+    user:
+      name: "{{ item.username }}"
+      password: "{{ item.pgen | password_hash('sha512' 65534 | random(seed=inventory_hostname) | string) }}"
+      update_password: always
+    loop:
+    - { username: "{{ userlist.0 }}", pgen: "{{ pws.results.0.stdout }}" }
+    - { username: "{{ userlist.1 }}", pgen: "{{ pws.results.1.stdout }}" }
+    - { username: "{{ userlist.2 }}", pgen: "{{ pws.results.2.stdout }}" }
+    - { username: "{{ userlist.3 }}", pgen: "{{ pws.results.3.stdout }}" }
+    register: update_status
+    ignore_errors: true
+
+  - name: Print update msg
+    debug:
+      msg: "{{ item }}'s password has been updated successfully"
+    loop:
+    - "{{ userlist.0 }}"
+    - "{{ userlist.1 }}"
+    - "{{ userlist.2 }}"
+    - "{{ userlist.3 }}"
+    when: update_status is succeeded
+
+  - name: Print failed msg
+    debug:
+      msg: "{{ item }}'s password was not updated"
+    loop:
+    - "{{ userlist.0 }}"
+    - "{{ userlist.1 }}"
+    - "{{ userlist.2 }}"
+    - "{{ userlist.3 }}"
+    when: update_status is failed
+
