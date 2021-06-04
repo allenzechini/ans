@@ -29,16 +29,6 @@
     changed_when: false
     #no_log: true
 
-#  - name: Print items
-#    debug:
-#      #var: item
-#      msg: "{{ item.name }} has ID: {{ item.id }}"
-#    loop:
-#    - "{{ user_exists.results.0.stdout }}"
-#    - "{{ user_exists.results.1.stdout }}"
-#    - "{{ user_exists.results.2.stdout }}"
-#    - "{{ user_exists.results.3.stdout }}"
-
   - name: Generate passwords
     command: 
       cmd: bw generate -uln --length 128
@@ -78,30 +68,30 @@
   # Edit section
   - name: Get item id, substitute, and edit
     shell:
-      cmd: bw get item "{{ item.userid | quote }}" | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw edit item "{{ item.userid | quote }}"
+      cmd: bw get item "{{ item.bw_item.id | quote }}" | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw edit item "{{ item.bw_item.id | quote }}"
     loop:
-    - { username: "{{ userlist.0 }}", pgen: "{{ pws.results.0.stdout }}", userid: "{{ user_exists.results.0.stdout }}" }
+    - { username: "{{ userlist.0 }}", pgen: "{{ pws.results.0.stdout }}", bw_item: "{{ user_exists.results.0.stdout }}" }
     when: '"Not found" not in user_exists.results.0.stderr'
 
   - name: Get item id, substitute, and edit
     shell:
-      cmd: bw get item "{{ item.userid | quote }}" | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw edit item "{{ item.userid | quote }}"
+      cmd: bw get item "{{ item.bw_item.id | quote }}" | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw edit item "{{ item.bw_item.id | quote }}"
     loop:
-    - { username: "{{ userlist.1 }}", pgen: "{{ pws.results.1.stdout }}", userid: "{{ user_exists.results.1.stdout }}" }
+    - { username: "{{ userlist.1 }}", pgen: "{{ pws.results.1.stdout }}", bw_item: "{{ user_exists.results.1.stdout }}" }
     when: '"Not found" not in user_exists.results.1.stderr'
 
   - name: Get item id, substitute, and edit
     shell:
-      cmd: bw get item "{{ item.userid | quote }}" | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw edit item "{{ item.userid | quote }}"
+      cmd: bw get item "{{ item.bw_item.id | quote }}" | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw edit item "{{ item.bw_item.id | quote }}"
     loop:
-    - { username: "{{ userlist.2 }}", pgen: "{{ pws.results.2.stdout }}", userid: "{{ user_exists.results.2.stdout }}" }
+    - { username: "{{ userlist.2 }}", pgen: "{{ pws.results.2.stdout }}", bw_item: "{{ user_exists.results.2.stdout }}" }
     when: '"Not found" not in user_exists.results.2.stderr'
 
   - name: Get item id, substitute, and edit
     shell:
-      cmd: bw get item "{{ item.userid | quote }}" | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw edit item "{{ item.userid | quote }}"
+      cmd: bw get item "{{ item.bw_item.id | quote }}" | jq ".name=\"{{ item.username | quote }}\" | .login=$(bw get template item.login | jq '.username="{{ item.username | quote }}" | .password="{{ item.pgen | quote }}"')" | bw encode | bw edit item "{{ item.bw_item.id | quote }}"
     loop:
-    - { username: "{{ userlist.3 }}", pgen: "{{ pws.results.3.stdout }}", userid: "{{ user_exists.results.3.stdout }}" }
+    - { username: "{{ userlist.3 }}", pgen: "{{ pws.results.3.stdout }}", bw_item: "{{ user_exists.results.3.stdout }}" }
     when: '"Not found" not in user_exists.results.3.stderr'
 
 # Play #2
