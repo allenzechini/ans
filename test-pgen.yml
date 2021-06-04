@@ -135,7 +135,6 @@
     - "{{ hostvars['localhost']['userlist'].2 }}"
     - "{{ hostvars['localhost']['userlist'].3 }}"
     when: update_status is succeeded
-    no_log: true
 
   - name: Print failed msg
     debug:
@@ -146,5 +145,4 @@
     - "{{ hostvars['localhost']['userlist'].2 }}"
     - "{{ hostvars['localhost']['userlist'].3 }}"
     when: update_status is failed
-    no_log: true
 
