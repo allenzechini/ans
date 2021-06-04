@@ -26,9 +26,8 @@
 
   - name: Install required software
     apt:
-      name: "{{ item }}"
+      name: "{{ required_pkgs }}"
       state: present
-    loop: "{{ required_pkgs }}"
 
 #  - name: Remove unnecessary software
 #    apt:
