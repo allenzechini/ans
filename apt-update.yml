@@ -19,12 +19,13 @@
             "text": "{{ ansible_date_time.iso8601_micro }} | Running apt-update.yml"
          }'
       url: "{{ lookup('env', 'ANSBL_WEBHOOK') }}"
+    #delegate_to: localhost
+    when: ansible_hostname == 'vansibl401ubu'
 
   roles:
     - geerlingguy.clamav
 
   tasks:
-
   - name: Update apt repo and cache
     apt:
       update_cache: yes
