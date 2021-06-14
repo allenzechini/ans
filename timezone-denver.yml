@@ -1,0 +1,10 @@
+---
+- name: "Set timezone to America/Denver"
+  hosts: ubuntu-servers
+  become: yes
+  become_user: root
+  tasks:
+  
+  - name: 
+    community.general.timezone:
+      name: America/Denver
