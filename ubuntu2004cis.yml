@@ -1,0 +1,14 @@
+---
+# Requires ubuntu2004_cis role from https://github.com/florianutz/ubuntu2004_cis.git
+# Can install role with "ansible-galaxy install -p roles -r requirements.yml"
+# where requirements.yml contains the single line:
+#
+# - src: https://github.com/florianutz/ubuntu2004_cis.git
+#
+- name: Ubuntu 20.04 CIS STIG Hardening
+  hosts: localhost
+  connection: local
+  become: true
+
+  roles:
+  - ubuntu2004_cis
