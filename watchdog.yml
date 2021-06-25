@@ -1,0 +1,12 @@
+---
+- name: Ensure services are running
+  hosts: all
+  become: true
+  tasks:
+  - name: Check status of <service>
+    command: systemctl status <service>
+    register: <service>_status
+
+  - name: Restart <service>
+    command: systemctl restart <service>
+    when: '"dead" in <service>_status.results.stdout'
