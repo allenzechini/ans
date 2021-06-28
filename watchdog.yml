@@ -20,3 +20,17 @@
     loop: "{{ failed_service_names.msg }}"
     changed_when: false
     when: '"failed" in failed_services.stdout'
+
+  - name: Send report to Slack
+    uri:
+      headers:
+        Content-Type: 'application/json'
+      method: POST
+      body_format: json
+      body:
+        '{
+           "text": "{{ ansible_date_time.iso8601_micro }} | Restarted {{ item }} service on {{ inventory_hostname }}"
+         }'
+      url: "{{ lookup('env', 'ANSBL_WEBHOOK') }}"
+    loop: "{{ failed_service_names.msg }}"
+    when: '"failed" in failed_services.stdout'
