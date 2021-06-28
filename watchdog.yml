@@ -1,7 +1,6 @@
 ---
 - name: Ensure services are running
   hosts: all
-  #connection: local
   become: true
   tasks:
   - name: Get list of failed services
