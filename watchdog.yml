@@ -1,44 +1,23 @@
 ---
 - name: Ensure services are running
-  hosts: localhost
-  connection: local
+  hosts: all
+  #connection: local
   become: true
-  vars:
-  # To check a new service,
-  # copy/paste last line in list and modify
-    service_list: [
-      'apt-daily',
-      'apt-daily-upgrade',
-      'clamav-daemon',
-      'clamav-freshclam',
-    ]
   tasks:
-  - name: Check status of services
-    command: systemctl status "{{ item }}"
+  - name: Get list of failed services
+    command: systemctl --failed
     ignore_errors: true
     changed_when: false
-    loop: "{{ service_list }}"
-    register: service_status
+    register: failed_services
 
-  - name: Debug var
+  - name: Determine name of failed services
     debug:
-      var: service_status
+      msg: "{{ failed_services.stdout | regex_search('^.* ([a-zA-Z0-9\\-]*?)\\.service', '\\1', multiline=True) }}"
+    register: failed_service_names
+    when: '"failed" in failed_services.stdout'
 
-  # To restart a new service,
-  # copy/paste last line in loop and add 1
-  # (assuming a new service was added at the top)
   - name: Restart failed services
-    command: systemctl restart "{{ item.name }}"
+    command: systemctl restart "{{ item }}"
+    loop: "{{ failed_service_names.msg }}"
     changed_when: false
-    loop:
-    - { name: "{{ service_status.results.0.item }}", status: "{{ service_status.results.0.stdout }}" }
-    - { name: "{{ service_status.results.1.item }}", status: "{{ service_status.results.1.stdout }}" }
-    - { name: "{{ service_status.results.2.item }}", status: "{{ service_status.results.2.stdout }}" }
-    - { name: "{{ service_status.results.3.item }}", status: "{{ service_status.results.3.stdout }}" }
-    when: '"dead" in item.status or "failed" in item.status '
-
-  - name: Re-check status of services
-    command: systemctl status "{{ item }}"
-    ignore_errors: true
-    changed_when: false
-    loop: "{{ service_list }}"
+    when: '"failed" in failed_services.stdout'
