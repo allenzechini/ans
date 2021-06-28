@@ -10,7 +10,7 @@
     changed_when: false
     register: failed_services
 
-  - name: Determine name of failed services
+  - name: Find service name
     debug:
       msg: "{{ failed_services.stdout | regex_search('^.* ([a-zA-Z0-9\\-]*?)\\.service', '\\1', multiline=True) }}"
     register: failed_service_names
