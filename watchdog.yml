@@ -2,6 +2,20 @@
 - name: Ensure services are running
   hosts: all
   become: true
+  pre_tasks:
+  - name: Send notification to Slack that playbook is running
+    uri:
+      headers:
+        Content-Type: 'application/json'
+      method: POST
+      body_format: json
+      body:
+        '{
+          "text": "{{ ansible_date_time.iso8601_micro }} | Running watchdog.yml"
+         }'
+      url: "{{ lookup('env', 'ANSBL_WEBHOOK') }}"
+    when: ansible_hostname == 'vansibl401ubu'
+
   tasks:
   - name: Get list of failed services
     command: systemctl --failed
