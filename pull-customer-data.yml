@@ -1,0 +1,43 @@
+---
+- name: Pull down customer data from JIRA
+  hosts: localhost
+  connection: local
+  vars:
+    JIRA:
+      username: "{{ lookup('env', 'JIRA_USERNAME') }}"
+      password: "{{ lookup('env', 'JIRA_PASSWORD') }}"
+    ObjectIDs:
+      ATOM: 22
+      ION: 12
+      ARS-600: 35
+      ARS-500: 8
+      ARS-400: 14
+      ARS-Redbox: 34
+      ARS-KB-R: 16
+      ARS-KB-H: 17
+      GETAC-F110: 28
+      PAN-GCS: 29
+      NUC-GCS: 30
+      RP-1: 31
+      MC1-CPU-25: 32
+      EARTH-QUARK: 33
+  tasks:
+  - name: Find all ATOMs
+    uri:
+      headers:
+        Content-Type: 'application/json'
+        #Content-Type: 'text/html;charset=UTF-8'
+      url: 'https://shotoverjira.atlassian.net/jira/servicedesk/insight/object-schemas/4?typeId={{ ObjectIDs.ATOM }}&objectId=4841'
+      user: '{{ JIRA.username }}'
+      password: '{{ JIRA.password }}'
+      #validate_certs: false
+      method: GET
+    register: ATOM_instances
+
+#  - name: curl to get ATOMS
+#    command: 'curl -u {{ JIRA.username }}:{{ JIRA.password }} -X GET -H \"Content-Type: application/json\" https://shotover.jira.atlassian.net/jira/servicedesk/insight/object-schemas/4?typeId={{ ObjectIDs.ATOM }}'
+#    register: ATOM_instances
+
+  - name: Debug ATOMs
+    debug:
+      var: ATOM_instances
