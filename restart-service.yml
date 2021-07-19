@@ -1,0 +1,10 @@
+---
+- name: Restart certain services
+  hosts: ubuntu-servers
+  gather_facts: true
+  become: true
+  tasks:
+  - name: Restart service , in all cases
+    ansible.builtin.service:
+      name: jcagent
+      state: restarted
