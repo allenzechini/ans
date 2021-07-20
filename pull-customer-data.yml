@@ -31,7 +31,7 @@
         Content-Type: 'application/json'
       #url: 'https://shotoverjira.atlassian.net/rest/servicedeskapi/insight/workspace'
       #url: 'https://shotoverjira.atlassian.net/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/objecttype/{{ ObjectTypeIDs.ATOM }}'
-      url: 'https://shotoverjira.atlassian.net/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/objectschema/4'
+      url: 'https://shotoverjira.atlassian.net/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/iql/objects'
       #user: '{{ JIRA.username }}'
       #password: '{{ JIRA.password }}'
       method: GET
