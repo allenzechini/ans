@@ -6,7 +6,8 @@
     JIRA:
       username: "{{ lookup('env', 'JIRA_USERNAME') }}"
       password: "{{ lookup('env', 'JIRA_PASSWORD') }}"
-    ObjectIDs:
+      workspaceID: "{{ lookup('env', 'JIRA_WORKSPACEID') }}"
+    ObjectTypeIDs:
       ATOM: 22
       ION: 12
       ARS-600: 35
@@ -22,22 +23,24 @@
       MC1-CPU-25: 32
       EARTH-QUARK: 33
   tasks:
+  # Explicitly uses v2 of the REST API...will need updating in the future
   - name: Find all ATOMs
     uri:
       headers:
+        Authorization: "Basic {{ lookup('env', 'JIRA_BASICAUTH') }}"
         Content-Type: 'application/json'
-        #Content-Type: 'text/html;charset=UTF-8'
-      url: 'https://shotoverjira.atlassian.net/jira/servicedesk/insight/object-schemas/4?typeId={{ ObjectIDs.ATOM }}&objectId=4841'
-      user: '{{ JIRA.username }}'
-      password: '{{ JIRA.password }}'
-      #validate_certs: false
+      #url: 'https://shotoverjira.atlassian.net/rest/servicedeskapi/insight/workspace'
+      #url: 'https://shotoverjira.atlassian.net/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/objecttype/{{ ObjectTypeIDs.ATOM }}'
+      url: 'https://shotoverjira.atlassian.net/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/objectschema/4'
+      #user: '{{ JIRA.username }}'
+      #password: '{{ JIRA.password }}'
       method: GET
-    register: ATOM_instances
+    register: object_instances
 
 #  - name: curl to get ATOMS
-#    command: 'curl -u {{ JIRA.username }}:{{ JIRA.password }} -X GET -H \"Content-Type: application/json\" https://shotover.jira.atlassian.net/jira/servicedesk/insight/object-schemas/4?typeId={{ ObjectIDs.ATOM }}'
-#    register: ATOM_instances
+#    command: 'curl -X GET -H "X-ExperimentalApi: opt-in" -H "Content-Type: application/json" -H "Authorization: Basic YWxsZW5Ac2hvdG92ZXIuY29tOmt1TTdVemo1U3lYaDVvazlSUVpTRTBGMg==" https://shotoverjira.atlassian.net/rest/servicedeskapi/insight/workspace'
+#    register: object_instances
 
   - name: Debug ATOMs
     debug:
-      var: ATOM_instances
+      var: object_instances
