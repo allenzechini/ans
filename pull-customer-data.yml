@@ -61,6 +61,8 @@
     debug:
       msg:
         - "Organization : {{ item.1.displayValue }}"
-        - "Product      : {{ item.0.displayValue | regex_search('^([A-Za-z0-9]+)\\s*-\\s*([0-9]+$)', '\\1') }}"
-        - "Serial#      : {{ item.0.displayValue | regex_search('^([A-Za-z0-9]+)\\s*-\\s*([0-9]+$)', '\\2') }}"
-    loop: "{{ object_instances.json.1.objectAttributeValues | zip(object_instances.json.4.objectAttributeValues) | list}}"
+        #- "Product      : {{ item.0.displayValue | regex_search('^([A-Za-z0-9]+)\\s*-\\s*([0-9]+$)', '\\1') }}"
+        #- "Serial#      : {{ item.0.displayValue | regex_search('^([A-Za-z0-9]+)\\s*-\\s*([0-9]+$)', '\\2') }}"
+        - "Product      : {{ item.0.displayValue.split()[0] }}"
+        - "Serial#      : {{ item.0.displayValue.split()[2] }}"
+    loop: "{{ object_instances.json.1.objectAttributeValues | zip(object_instances.json.4.objectAttributeValues) | list }}"
