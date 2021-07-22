@@ -23,46 +23,21 @@
       MC1-CPU-25: 32
       EARTH-QUARK: 33
   tasks:
-  # Explicitly uses v1 of the REST API...will need updating in the future
+  # Explicitly uses v1 of the REST API...may need updating in the future
   - name: Find all ATOMs
     uri:
       headers:
-        #Authorization: "Bearer {{ lookup('env', 'JIRA_APITOKEN') }}"  #did not work
         Authorization: "Basic {{ JIRA.basicauth }}"
         Accept: 'application/json'
         X-ExperimentalApi: 'opt-in'  #needed for certain exp APIs
-      #url: 'https://shotoverjira.atlassian.net/rest/servicedeskapi/insight/workspace' #works;workspaceID saved above
-      #url: 'https://api.atlassian.com/ex/jira/{{ JIRA.cloudID }}/rest/servicedeskapi/request'  #works
-      #url: 'https://api.atlassian.com/ex/jira/{{ JIRA.cloudID }}/rest/servicedeskapi/servicedesk'  #works;id=4
-      #url: 'https://api.atlassian.com/ex/jira/{{ JIRA.cloudID }}/rest/servicedeskapi/servicedesk/{{ JIRA.servicedeskID }}/organization?start={{ item }}'
-      #url: 'https://shotoverjira.atlassian.net/rest/servicedeskapi/organization/{{ item }}' #works if you know the org ID number
-      #url: 'https://api.atlassian.com/ex/jira/{{ JIRA.cloudID }}/rest/servicedeskapi/organization?start={{ item }}'  #works up to ~200orgs
-      #url: 'https://shotoverjira.atlassian.net/rest/servicedeskapi/organization?start={{ item }}'  #works up to ~200orgs
-      #
-      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/objecttype/22' #works
-      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/objecttype/{{ item.value }}'
       url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4843/attributes'
       method: GET
-#    loop: "{{ ObjectTypeIDs | dict2items }}"
     register: object_instances
-#    ignore_errors: true
-
-#  - name: Debug ATOMs
-#    debug:
-#      msg: "{{ item.json }}"
-#    loop: 
-#    - "{{ object_instances.results.0 }}"
-#    - "{{ object_instances.results.1 }}"
-#    - "{{ object_instances.results.2 }}"
-#    - "{{ object_instances.results.3 }}"
-#    - "{{ object_instances.results.4 }}"
 
   - name: Debug ATOMs
     debug:
       msg:
         - "Organization : {{ item.1.displayValue }}"
-        #- "Product      : {{ item.0.displayValue | regex_search('^([A-Za-z0-9]+)\\s*-\\s*([0-9]+$)', '\\1') }}"
-        #- "Serial#      : {{ item.0.displayValue | regex_search('^([A-Za-z0-9]+)\\s*-\\s*([0-9]+$)', '\\2') }}"
         - "Product      : {{ item.0.displayValue.split()[0] }}"
         - "Serial#      : {{ item.0.displayValue.split()[2] }}"
     loop: "{{ object_instances.json.1.objectAttributeValues | zip(object_instances.json.4.objectAttributeValues) | list }}"
