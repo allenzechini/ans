@@ -2,11 +2,15 @@
 - name: Pull down customer data from JIRA
   hosts: localhost
   connection: local
+  gather_facts: false
   vars:
     JIRA:
       username: "{{ lookup('env', 'JIRA_USERNAME') }}"
       password: "{{ lookup('env', 'JIRA_PASSWORD') }}"
+      basicauth: "{{ lookup('env', 'JIRA_BASICAUTH') }}"
       workspaceID: "{{ lookup('env', 'JIRA_WORKSPACEID') }}"
+      cloudID: "{{ lookup('env', 'JIRA_CLOUDID') }}"
+      servicedeskID: "4"
     ObjectTypeIDs:
       ATOM: 22
       ION: 12
@@ -23,24 +27,61 @@
       MC1-CPU-25: 32
       EARTH-QUARK: 33
   tasks:
-  # Explicitly uses v2 of the REST API...will need updating in the future
+  # Explicitly uses v1 of the REST API...will need updating in the future
   - name: Find all ATOMs
     uri:
       headers:
-        Authorization: "Basic {{ lookup('env', 'JIRA_BASICAUTH') }}"
-        Content-Type: 'application/json'
-      #url: 'https://shotoverjira.atlassian.net/rest/servicedeskapi/insight/workspace'
-      #url: 'https://shotoverjira.atlassian.net/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/objecttype/{{ ObjectTypeIDs.ATOM }}'
-      url: 'https://shotoverjira.atlassian.net/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/iql/objects'
-      #user: '{{ JIRA.username }}'
-      #password: '{{ JIRA.password }}'
+        #Authorization: "Bearer {{ lookup('env', 'JIRA_APITOKEN') }}"  #did not work
+        Authorization: "Basic {{ JIRA.basicauth }}"
+        Accept: 'application/json'
+        X-ExperimentalApi: 'opt-in'  #needed for certain exp APIs
+      #url: 'https://shotoverjira.atlassian.net/rest/servicedeskapi/insight/workspace' #works;workspaceID saved above
+      #url: 'https://shotoverjira.atlassian.net/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/icon/global'  #did not work
+      #url: 'https://shotoverjira.atlassian.net/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/objecttype/{{ ObjectTypeIDs.ATOM }}' #did not work
+      #url: 'https://api.atlassian.com/ex/jira/{{ JIRA.cloudID }}/rest/servicedeskapi/request/jsm/insight/workspace/{{ JIRA.workspaceID }}/1/objectschema/list'  #did not work
+      #url: 'https://api.atlassian.com/ex/jira/{{ JIRA.cloudID }}/rest/servicedeskapi/request'  #works
+      #url: 'https://api.atlassian.com/ex/jira/{{ JIRA.cloudID }}/rest/servicedeskapi/organization?start={{ item }}'  #works up to ~200orgs
+      #url: 'https://api.atlassian.com/ex/jira/{{ JIRA.cloudID }}/rest/servicedeskapi/servicedesk'  #works;id=4
+      #url: 'https://api.atlassian.com/ex/jira/{{ JIRA.cloudID }}/rest/servicedeskapi/servicedesk'
+      #url: 'https://api.atlassian.com/ex/jira/{{ JIRA.cloudID }}/rest/servicedeskapi/servicedesk/{{ JIRA.servicedeskID }}/organization?start={{ item }}'
+      #url: 'https://shotoverjira.atlassian.net/rest/servicedeskapi/servicedesk/{{ JIRA.servicedeskID }}/organization?start={{ item }}' #did not work
+      url: 'https://shotoverjira.atlassian.net/rest/servicedeskapi/organization?start={{ item }}'  #works up to ~200orgs
+      #url: 'https://shotoverjira.atlassian.net/rest/servicedeskapi/organization/{{ item }}' #works if you know the org ID number
+      #url: 'https://api.atlassian.com/ex/jira/{{ JIRA.cloudID }}/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/objectschema/list' #dead link
+      #url: 'https://api.atlassian.com/ex/jira/{{ JIRA.cloudID }}/rest/insight/1.0/objectschema/list'
       method: GET
+    loop:
+    - 0
+#    - 1
+    - 50
+    - 100
+    - 150
+    - 200
+    - 250
+#    - 300
+#    - 350
+#    - 400
+#    - 450
+#    - 500
+#    - 550
+#    - 600
+#    - 650
+#    - 700
+#    - 750
     register: object_instances
-
-#  - name: curl to get ATOMS
-#    command: 'curl -X GET -H "X-ExperimentalApi: opt-in" -H "Content-Type: application/json" -H "Authorization: Basic YWxsZW5Ac2hvdG92ZXIuY29tOmt1TTdVemo1U3lYaDVvazlSUVpTRTBGMg==" https://shotoverjira.atlassian.net/rest/servicedeskapi/insight/workspace'
-#    register: object_instances
+    ignore_errors: true
 
   - name: Debug ATOMs
     debug:
-      var: object_instances
+#      var: object_instances
+      msg: "{{ item.json }}"
+    loop: 
+    - "{{ object_instances.results.0 }}"
+    - "{{ object_instances.results.1 }}"
+    - "{{ object_instances.results.2 }}"
+    - "{{ object_instances.results.3 }}"
+    - "{{ object_instances.results.4 }}"
+
+#  - name: Count ATOMs
+#    debug:
+#      msg: "Number of orgs: {{ object_instances.json }}"
