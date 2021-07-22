@@ -49,7 +49,7 @@
       #url: 'https://api.atlassian.com/ex/jira/{{ JIRA.cloudID }}/rest/servicedeskapi/organization?start={{ item }}'  #works up to ~200orgs
       #url: 'https://shotoverjira.atlassian.net/rest/servicedeskapi/organization?start={{ item }}'  #works up to ~200orgs
       #url: 'https://shotoverjira.atlassian.net/rest/servicedeskapi/request' #returned nothing
-      url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4841' #dead link
+      url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4841'
       method: GET
 #    loop:
 #    - 0
