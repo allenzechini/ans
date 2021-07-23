@@ -42,7 +42,7 @@
 #        - "Serial#      : {{ item.0.displayValue.split()[2] }}"
 #    loop: "{{ object_instances.json.1.objectAttributeValues | zip(object_instances.json.4.objectAttributeValues) | list }}"
 
-  - name: Find all object IDs
+  - name: Find all object IDs for ATOMs
     uri:
       headers:
         Authorization: "Basic {{ JIRA.basicauth }}"
@@ -50,23 +50,28 @@
         X-ExperimentalApi: 'opt-in'  #needed for certain exp APIs
       url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/navlist/iql'
       body_format: json
+#        "iql": "objectType = {{ item.key }} order by Name",
+#        "objectTypeId": "{{ item.value }}",
       body: '{
-        "iql": "objectType = {{ item.key }} order by Name",
-        "objectTypeId": "{{ item.value }}",
+        "iql": "objectType = ATOM order by Name",
+        "objectTypeId": "22",
         "page": 1,
         "resultsPerPage": 1000,
         "includeAttributes": false,
         "objectSchemaId": "4"
       }'
       method: POST
-    loop: "{{ ObjectTypeIDs | dict2items }}"
-    register: object_IDs
+#    loop: "{{ ObjectTypeIDs | dict2items }}"
+    register: ATOM_object_IDs
 
-  - name: Debug ATOMs
+  - name: Debug ATOM object IDs
     debug:
-      var: object_IDs
-#      msg:
-#        - "Organization : {{ item.1.displayValue }}"
-#        - "Product      : {{ item.0.displayValue.split()[0] }}"
-#        - "Serial#      : {{ item.0.displayValue.split()[2] }}"
-#    loop: "{{ object_instances.json.1.objectAttributeValues | zip(object_instances.json.4.objectAttributeValues) | list }}"
+      msg: "{{ item.id }}"
+    loop: "{{ ATOM_object_IDs.json.objectEntries }}"
+    loop_control:
+      label: "{{ item.id }}"
+#    register: ATOM_object_ID_list
+
+#  - name: Show ATOM object ID list
+#    debug:
+#      var: ATOM_object_ID_list
