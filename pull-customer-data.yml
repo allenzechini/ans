@@ -7,50 +7,52 @@
     JIRA:
       basicauth: "{{ lookup('env', 'JIRA_BASICAUTH') }}"
       workspaceID: "{{ lookup('env', 'JIRA_WORKSPACEID') }}"
-    # For each product, need ID (ObjectTypeID) and OrgID (ObjectTypeAttributeID)
+    # For each product we need...
+    #   PrdID (ObjectTypeID) 
+    #   OrgID (ObjectTypeAttributeID)
     ProductInfo:
       ATOM: 
-        ObjectTypeID: 22
-        ObjectTypeAttID: 312
+        PrdID: 22
+        OrgID: 312
       ION: 
-        ObjectTypeID: 12
-        ObjectTypeAttID: 90
+        PrdID: 12
+        OrgID: 90
       ARS-600: 
-        ObjectTypeID: 35 
-        ObjectTypeAttID: 427
+        PrdID: 35 
+        OrgID: 427
       ARS-500: 
-        ObjectTypeID: 8
-        ObjectTypeAttID: 51
+        PrdID: 8
+        OrgID: 51
       ARS-400: 
-        ObjectTypeID: 14 
-        ObjectTypeAttID: 112 
+        PrdID: 14 
+        OrgID: 112 
       ARS-Redbox: 
-        ObjectTypeID: 34
-        ObjectTypeAttID: 408
+        PrdID: 34
+        OrgID: 408
       ARS-KB-R: 
-        ObjectTypeID: 16
-        ObjectTypeAttID: 134
+        PrdID: 16
+        OrgID: 134
       ARS-KB-H: 
-        ObjectTypeID: 17
-        ObjectTypeAttID: 145
+        PrdID: 17
+        OrgID: 145
       GETAC F110: 
-        ObjectTypeID: 28
-        ObjectTypeAttID: 480
+        PrdID: 28
+        OrgID: 480
       PAN-GCS: 
-        ObjectTypeID: 29
-        ObjectTypeAttID: 479
+        PrdID: 29
+        OrgID: 479
       NUC-GCS: 
-        ObjectTypeID: 30
-        ObjectTypeAttID: 478
+        PrdID: 30
+        OrgID: 478
       RP-1: 
-        ObjectTypeID: 31
-        ObjectTypeAttID: 379
+        PrdID: 31
+        OrgID: 379
       MC1-CPU-25: 
-        ObjectTypeID: 32
-        ObjectTypeAttID: 391
+        PrdID: 32
+        OrgID: 391
       EARTH-QUARK: 
-        ObjectTypeID: 33
-        ObjectTypeAttID: 477
+        PrdID: 33
+        OrgID: 477
   tasks:
   # Explicitly uses v1 of the REST API...may need updating in the future
 #  - name: Get Org/Prod/Serial data for one ATOM
@@ -88,13 +90,16 @@
 #        "objectTypeId": "{{ item.value }}",
 #        "iql": "objectType = \"ATOM\" AND objectTypeId = 4841 order by Name",
       body: '{
-        "iql": "objectType = \"ATOM\" AND Name like \"160369\"",
+        "iql": "objectType = \"ATOM\" AND Name like \"16036\"",
         "objectTypeId": "22",
         "page": 1,
         "resultsPerPage": 1000,
         "includeAttributes": true,
         "attributesToDisplay": {
-          "attributesToDisplayIds": [ 312 ]
+          "attributesToDisplayIds": [ 
+            308,
+            312
+          ]
         },
         "objectSchemaId": "4"
       }'
@@ -105,8 +110,14 @@
 
   - name: Debug ALL object IDs
     debug:
-      msg: "{{ object_IDs.json }}"
-#    loop: "{{ object_IDs }}"
+      #msg: "{{ item.attributes.0.objectAttributeValues.0.displayValue }}"
+      msg:
+      - "Product : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
+      - "Serial# : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[2] }}"
+      - "Orgnztn : {{ item.attributes.1.objectAttributeValues.0.displayValue }}"
+    loop: "{{ object_IDs.json.objectEntries }}"
+    loop_control:
+      label: "{{ item.attributes.0.objectAttributeValues.0.displayValue }}"
 
 #  - name: Debug ALL object IDs
 #    debug:
