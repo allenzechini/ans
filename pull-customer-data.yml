@@ -7,38 +7,107 @@
     JIRA:
       basicauth: "{{ lookup('env', 'JIRA_BASICAUTH') }}"
       workspaceID: "{{ lookup('env', 'JIRA_WORKSPACEID') }}"
-    ObjectTypeIDs:
-      ATOM: "22"
-      ION: "12"
-      ARS-600: "35"
-      ARS-500: "8"
-      ARS-400: "14"
-      ARS-Redbox: "34"
-      ARS-KB-R: "16"
-      ARS-KB-H: "17"
-      GETAC F110: "28"
-      PAN-GCS: "29"
-      NUC-GCS: "30"
-      RP-1: "31"
-      MC1-CPU-25: "32"
-      EARTH-QUARK: "33"
+#    ObjectTypeIDs:
+#      ATOM: "22"
+#      ION: "12"
+#      ARS-600: "35"
+#      ARS-500: "8"
+#      ARS-400: "14"
+#      ARS-Redbox: "34"
+#      ARS-KB-R: "16"
+#      ARS-KB-H: "17"
+#      GETAC F110: "28"
+#      PAN-GCS: "29"
+#      NUC-GCS: "30"
+#      RP-1: "31"
+#      MC1-CPU-25: "32"
+#      EARTH-QUARK: "33"
+    # For each product, need ID (ObjectTypeID) and OrgID (ObjectTypeAttributeID)
+    ProductInfo:
+      ATOM: 
+        ObjectTypeID: 22
+        ObjectTypeAttID: 312
+      ION: 
+        ObjectTypeID: 12
+        ObjectTypeAttID: 90
+      ARS-600: 
+        ObjectTypeID: 35 
+        ObjectTypeAttID: 427
+      ARS-500: 
+        ObjectTypeID: 8
+        ObjectTypeAttID: 51
+      ARS-400: 
+        ObjectTypeID: 14 
+        ObjectTypeAttID: 112 
+      ARS-Redbox: 
+        ObjectTypeID: 34
+        ObjectTypeAttID: 408
+      ARS-KB-R: 
+        ObjectTypeID: 16
+        ObjectTypeAttID: 134
+      ARS-KB-H: 
+        ObjectTypeID: 17
+        ObjectTypeAttID: 145
+      GETAC F110: 
+        ObjectTypeID: 28
+        ObjectTypeAttID: 480
+      PAN-GCS: 
+        ObjectTypeID: 29
+        ObjectTypeAttID: 479
+      NUC-GCS: 
+        ObjectTypeID: 30
+        ObjectTypeAttID: 478
+      RP-1: 
+        ObjectTypeID: 31
+        ObjectTypeAttID: 379
+      MC1-CPU-25: 
+        ObjectTypeID: 32
+        ObjectTypeAttID: 391
+      EARTH-QUARK: 
+        ObjectTypeID: 33
+        ObjectTypeAttID: 477
   tasks:
   # Explicitly uses v1 of the REST API...may need updating in the future
-#  - name: Get Org/Prod/Serial data for one ATOM
-#    uri:
-#      headers:
-#        Authorization: "Basic {{ JIRA.basicauth }}"
-#        Accept: 'application/json'
-#        X-ExperimentalApi: 'opt-in'  #needed for certain exp APIs
-#      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4843/attributes'
-#      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4841/attributes'
-#      url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4353/attributes'
-#      method: GET
-#    register: object_instances
-#
-#  - name: Debug ATOMs
-#    debug:
-#      var: object_instances
+  - name: Get Org/Prod/Serial data for one ATOM
+    uri:
+      headers:
+        Authorization: "Basic {{ JIRA.basicauth }}"
+        Accept: 'application/json'
+        X-ExperimentalApi: 'opt-in'  #needed for certain exp APIs
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4843/attributes' #ATOM 1
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4841/attributes' #ATOM 2
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4353/attributes' #ION 1
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4363/attributes' #ION 2
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4085/attributes' #ARS-600 1
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4093/attributes' #ARS-600 2
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/3966/attributes' #ARS-500 1
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/3972/attributes' #ARS-500 2
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/3836/attributes' #ARS-400 1 !!! DO NOT HAVE ORG !!!
+      url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/3841/attributes' #ARS-400 2 !!! DO NOT HAVE ORG !!!
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/3771/attributes' #ARS-Redbox 1
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/3792/attributes' #ARS-Redbox 2
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/5439/attributes' #ARS-KB-R 1
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/5445/attributes' #ARS-KB-R 2
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/5335/attributes' #ARS-KB-H 1
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/5341/attributes' #ARS-KB-H 2
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/5631/attributes' #GETAC F110 1
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/5636/attributes' #GETAC F110 2
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/5661/attributes' #PAN-GCS 1
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/5824/attributes' #PAN-GCS 2
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/5659/attributes' #NUC-GCS 1
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/5660/attributes' #NUC-GCS 2
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4839/attributes' #RP-1 1
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/5805/attributes' #RP-1 2
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4829/attributes' #MC1-CPU-25 1
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/5812/attributes' #MC1-CPU-25 2
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4831/attributes' #EARTH-QUARK 1
+      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4836/attributes' #EARTH-QUARK 2
+      method: GET
+    register: object_instances
+
+  - name: Debug ATOMs
+    debug:
+      var: object_instances
         
 #  - name: Debug ATOMs
 #    debug:
@@ -49,30 +118,33 @@
 #    loop: "{{ object_instances.json.1.objectAttributeValues | zip(object_instances.json.4.objectAttributeValues) | list }}"
 
 #  - name: Find all object IDs for ATOMs
-  - name: Find all object IDs for ATOMs
-    uri:
-      headers:
-        Authorization: "Basic {{ JIRA.basicauth }}"
-        Accept: 'application/json'
-        X-ExperimentalApi: 'opt-in'  #needed for certain exp APIs
-      url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/navlist/iql'
-      body_format: json
-      body: '{
-        "iql": "objectType = \"{{ item.key }}\" order by Name",
-        "objectTypeId": "{{ item.value }}",
-        "page": 1,
-        "resultsPerPage": 1000,
-        "includeAttributes": true,
-        "objectSchemaId": "4"
-      }'
-      method: POST
-    loop: "{{ ObjectTypeIDs | dict2items }}"
-    register: object_IDs
+#  - name: Find all object IDs for ATOMs
+#    uri:
+#      headers:
+#        Authorization: "Basic {{ JIRA.basicauth }}"
+#        Accept: 'application/json'
+#        X-ExperimentalApi: 'opt-in'  #needed for certain exp APIs
+#      url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/navlist/iql'
+#      body_format: json
+##        "iql": "objectType = \"{{ item.key }}\" order by Name",
+##        "objectTypeId": "{{ item.value }}",
+#      body: '{
+#        "iql": "objectType = \"ATOM\" order by Name",
+#        "objectTypeId": "22",
+#        "page": 1,
+#        "resultsPerPage": 1000,
+#        "includeAttributes": true,
+#        "attributesToDisplay": ,
+#        "objectSchemaId": "4"
+#      }'
+#      method: POST
+#    loop: "{{ ObjectTypeIDs | dict2items }}"
+#    register: object_IDs
 
-  - name: Debug ALL object IDs
-    debug:
-      msg: "{{ item.json }}"
-    loop: "{{ object_IDs.results }}"
+#  - name: Debug ALL object IDs
+#    debug:
+#      msg: "{{ item.json }}"
+#    loop: "{{ object_IDs.results }}"
 #    loop_control:
 #      label: "{{ item.json.name }}"
 
