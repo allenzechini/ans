@@ -1,5 +1,5 @@
 ---
-- name: Pull down customer data from JIRA
+- name: Pull customer data from JIRA
   hosts: localhost
   connection: local
   gather_facts: false
@@ -16,7 +16,7 @@
       ARS-Redbox: "34"
       ARS-KB-R: "16"
       ARS-KB-H: "17"
-      GETAC-F110: "28"
+      GETAC F110: "28"
       PAN-GCS: "29"
       NUC-GCS: "30"
       RP-1: "31"
@@ -24,16 +24,22 @@
       EARTH-QUARK: "33"
   tasks:
   # Explicitly uses v1 of the REST API...may need updating in the future
-#  - name: Find all ATOMs
+#  - name: Get Org/Prod/Serial data for one ATOM
 #    uri:
 #      headers:
 #        Authorization: "Basic {{ JIRA.basicauth }}"
 #        Accept: 'application/json'
 #        X-ExperimentalApi: 'opt-in'  #needed for certain exp APIs
-#      url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4843/attributes'
+#      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4843/attributes'
+#      #url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4841/attributes'
+#      url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4353/attributes'
 #      method: GET
 #    register: object_instances
 #
+#  - name: Debug ATOMs
+#    debug:
+#      var: object_instances
+        
 #  - name: Debug ATOMs
 #    debug:
 #      msg:
@@ -42,6 +48,7 @@
 #        - "Serial#      : {{ item.0.displayValue.split()[2] }}"
 #    loop: "{{ object_instances.json.1.objectAttributeValues | zip(object_instances.json.4.objectAttributeValues) | list }}"
 
+#  - name: Find all object IDs for ATOMs
   - name: Find all object IDs for ATOMs
     uri:
       headers:
@@ -50,28 +57,34 @@
         X-ExperimentalApi: 'opt-in'  #needed for certain exp APIs
       url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/navlist/iql'
       body_format: json
-#        "iql": "objectType = {{ item.key }} order by Name",
-#        "objectTypeId": "{{ item.value }}",
       body: '{
-        "iql": "objectType = ATOM order by Name",
-        "objectTypeId": "22",
+        "iql": "objectType = \"{{ item.key }}\" order by Name",
+        "objectTypeId": "{{ item.value }}",
         "page": 1,
         "resultsPerPage": 1000,
-        "includeAttributes": false,
+        "includeAttributes": true,
         "objectSchemaId": "4"
       }'
       method: POST
-#    loop: "{{ ObjectTypeIDs | dict2items }}"
-    register: ATOM_object_IDs
+    loop: "{{ ObjectTypeIDs | dict2items }}"
+    register: object_IDs
 
-  - name: Debug ATOM object IDs
+  - name: Debug ALL object IDs
     debug:
-      msg: "{{ item.id }}"
-    loop: "{{ ATOM_object_IDs.json.objectEntries }}"
-    loop_control:
-      label: "{{ item.id }}"
+      msg: "{{ item.json }}"
+    loop: "{{ object_IDs.results }}"
+#    loop_control:
+#      label: "{{ item.json.name }}"
+
+#  - name: Debug ATOM object IDs
+#    debug:
+#      msg: 
+#        - "Object Name    : {{ item.json.objectEntries.name.split()[0] }}"
+#        - "Object Serial# : {{ item.json.objectEntries.name.split()[2] }}"
+#        - "Object ID      : {{ item.json.objectEntries.id }}"
+#    #loop: "{{ object_IDs.results.json.objectEntries }}"
+#    loop: "{{ object_IDs.results }}"
+#    loop_control:
+#      label: "{{ item.json.objectEntries.name }}"
 #    register: ATOM_object_ID_list
 
-#  - name: Show ATOM object ID list
-#    debug:
-#      var: ATOM_object_ID_list
