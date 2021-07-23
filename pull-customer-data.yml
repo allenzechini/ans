@@ -8,36 +8,65 @@
       basicauth: "{{ lookup('env', 'JIRA_BASICAUTH') }}"
       workspaceID: "{{ lookup('env', 'JIRA_WORKSPACEID') }}"
     ObjectTypeIDs:
-      ATOM: 22
-      ION: 12
-      ARS-600: 35
-      ARS-500: 8
-      ARS-400: 14
-      ARS-Redbox: 34
-      ARS-KB-R: 16
-      ARS-KB-H: 17
-      GETAC-F110: 28
-      PAN-GCS: 29
-      NUC-GCS: 30
-      RP-1: 31
-      MC1-CPU-25: 32
-      EARTH-QUARK: 33
+      ATOM: "22"
+      ION: "12"
+      ARS-600: "35"
+      ARS-500: "8"
+      ARS-400: "14"
+      ARS-Redbox: "34"
+      ARS-KB-R: "16"
+      ARS-KB-H: "17"
+      GETAC-F110: "28"
+      PAN-GCS: "29"
+      NUC-GCS: "30"
+      RP-1: "31"
+      MC1-CPU-25: "32"
+      EARTH-QUARK: "33"
   tasks:
   # Explicitly uses v1 of the REST API...may need updating in the future
-  - name: Find all ATOMs
+#  - name: Find all ATOMs
+#    uri:
+#      headers:
+#        Authorization: "Basic {{ JIRA.basicauth }}"
+#        Accept: 'application/json'
+#        X-ExperimentalApi: 'opt-in'  #needed for certain exp APIs
+#      url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4843/attributes'
+#      method: GET
+#    register: object_instances
+#
+#  - name: Debug ATOMs
+#    debug:
+#      msg:
+#        - "Organization : {{ item.1.displayValue }}"
+#        - "Product      : {{ item.0.displayValue.split()[0] }}"
+#        - "Serial#      : {{ item.0.displayValue.split()[2] }}"
+#    loop: "{{ object_instances.json.1.objectAttributeValues | zip(object_instances.json.4.objectAttributeValues) | list }}"
+
+  - name: Find all object IDs
     uri:
       headers:
         Authorization: "Basic {{ JIRA.basicauth }}"
         Accept: 'application/json'
         X-ExperimentalApi: 'opt-in'  #needed for certain exp APIs
-      url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/4843/attributes'
-      method: GET
-    register: object_instances
+      url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/navlist/iql'
+      body_format: json
+      body: '{
+        "iql": "objectType = {{ item.key }} order by Name",
+        "objectTypeId": "{{ item.value }}",
+        "page": 1,
+        "resultsPerPage": 1000,
+        "includeAttributes": false,
+        "objectSchemaId": "4"
+      }'
+      method: POST
+    loop: "{{ ObjectTypeIDs | dict2items }}"
+    register: object_IDs
 
   - name: Debug ATOMs
     debug:
-      msg:
-        - "Organization : {{ item.1.displayValue }}"
-        - "Product      : {{ item.0.displayValue.split()[0] }}"
-        - "Serial#      : {{ item.0.displayValue.split()[2] }}"
-    loop: "{{ object_instances.json.1.objectAttributeValues | zip(object_instances.json.4.objectAttributeValues) | list }}"
+      var: object_IDs
+#      msg:
+#        - "Organization : {{ item.1.displayValue }}"
+#        - "Product      : {{ item.0.displayValue.split()[0] }}"
+#        - "Serial#      : {{ item.0.displayValue.split()[2] }}"
+#    loop: "{{ object_instances.json.1.objectAttributeValues | zip(object_instances.json.4.objectAttributeValues) | list }}"
