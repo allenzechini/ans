@@ -66,12 +66,22 @@
         NameID: 399
         OrgID: 477
   tasks:
+  - name: Create/Update file to store info
+    file:
+      path: /home/ansible/projects/ans/product_info.txt
+      mode: '0644'
+      state: touch
+
   - name: Find info for all products
     include_tasks: get-product.yml
     loop: "{{ lookup('dict', ProductInfo) }}"
     loop_control:
       loop_var: outer_item
     register: product_IDs
+
+#  - name: Print product info to stdout
+#    debug:
+#      msg: "{{ product_IDs }}"
 
 #  - name: Get number of each product
 #    debug:

@@ -1,0 +1,167 @@
+========== ATOM #1 ==========
+"Product : ATOM"
+"Serial# : 160369"
+"Orgnztn : CBP Astar"
+========== ATOM #1 ==========
+========== ATOM #2 ==========
+"Product : ATOM"
+"Serial# : 160373"
+"Orgnztn : CBP Astar"
+========== ATOM #2 ==========
+
+========== ION #1 ==========
+"Product : ION"
+"Serial# : 000000"
+"Orgnztn : Churchill Internal"
+========== ION #1 ==========
+
+========== ION #2 ==========
+"Product : ION"
+"Serial# : 110002"
+"Orgnztn : Royal Canadian Mounted Police (RCMP)"
+========== ION #2 ==========
+
+========== ARS-600 #1 ==========
+"Product : ARS-600"
+"Serial# : 141009"
+"Orgnztn : Riverside Police Aviation Unit"
+========== ARS-600 #1 ==========
+
+========== ARS-600 #2 ==========
+"Product : ARS-600"
+"Serial# : 141010"
+"Orgnztn : L-3 Vertex Aerospace"
+========== ARS-600 #2 ==========
+
+========== ARS-500 #1 ==========
+"Product : ARS-500"
+"Serial# : 109476"
+"Orgnztn : Royal Canadian Mounted Police (RCMP)"
+========== ARS-500 #1 ==========
+
+========== ARS-500 #2 ==========
+"Product : ARS-500"
+"Serial# : 140401"
+"Orgnztn : Texas Department of Public Safety - Aircraft Section"
+========== ARS-500 #2 ==========
+
+========== ARS-400 #1 ==========
+"Product : ARS-400"
+"Serial# : 201207"
+"Orgnztn : Drug Enforcement Administration (DEA)"
+========== ARS-400 #1 ==========
+
+========== ARS-400 #2 ==========
+"Product : ARS-400"
+"Serial# : 201208"
+"Orgnztn : Drug Enforcement Administration (DEA)"
+========== ARS-400 #2 ==========
+
+========== ARS-REDBOX #1 ==========
+"Product : ARS-REDBOX"
+"Serial# : 1"
+"Orgnztn : Federal Bureau of Investigation (FBI)"
+========== ARS-REDBOX #1 ==========
+
+========== ARS-REDBOX #2 ==========
+"Product : ARS-REDBOX"
+"Serial# : 12"
+"Orgnztn : Federal Bureau of Investigation (FBI)"
+========== ARS-REDBOX #2 ==========
+
+========== ARS-KB-R #1 ==========
+"Product : ARS-KB-R"
+"Serial# : 110132"
+"Orgnztn : Hernando County Sheriff's Office"
+========== ARS-KB-R #1 ==========
+
+========== ARS-KB-R #2 ==========
+"Product : ARS-KB-R"
+"Serial# : 310001"
+"Orgnztn : Churchill Navigation"
+========== ARS-KB-R #2 ==========
+
+========== ARS-KB-H #1 ==========
+"Product : ARS-KB-H"
+"Serial# : 360009"
+"Orgnztn : Palm Beach County Sheriffs Office (PBSO)"
+========== ARS-KB-H #1 ==========
+
+========== ARS-KB-H #2 ==========
+"Product : ARS-KB-H"
+"Serial# : 360011"
+"Orgnztn : Palm Beach County Sheriffs Office (PBSO)"
+========== ARS-KB-H #2 ==========
+
+========== GETAC-F110 #1 ==========
+"Product : GETAC-F110"
+"Serial# : RFB39F2131"
+"Orgnztn : Ireland National Police (An Garda Siochana)"
+========== GETAC-F110 #1 ==========
+
+========== GETAC-F110 #2 ==========
+"Product : GETAC-F110"
+"Serial# : RG739F0441"
+"Orgnztn : Victoria Police - State Surveillance Unit"
+========== GETAC-F110 #2 ==========
+
+========== PAN-GCS #1 ==========
+"Product : PAN-GCS"
+"Serial# : 0DTTA18504"
+"Orgnztn : Gwinnett County Police DepartmentAviation Unit"
+========== PAN-GCS #1 ==========
+
+========== PAN-GCS #2 ==========
+"Product : PAN-GCS"
+"Serial# : 0LTTA95772"
+"Orgnztn : Two Bear Air Rescue"
+========== PAN-GCS #2 ==========
+
+========== NUC-GCS #1 ==========
+"Product : NUC-GCS"
+"Serial# : G6BN01600HX3"
+"Orgnztn : Bear Defense"
+========== NUC-GCS #1 ==========
+
+========== NUC-GCS #2 ==========
+"Product : NUC-GCS"
+"Serial# : G6BN721000JM"
+"Orgnztn : Bear Defense"
+========== NUC-GCS #2 ==========
+
+========== RP1 #1 ==========
+"Product : RP1"
+"Serial# : 760001"
+"Orgnztn : Airbus"
+========== RP1 #1 ==========
+
+========== RP1 #2 ==========
+"Product : RP1"
+"Serial# : 760002"
+"Orgnztn : Airbus"
+========== RP1 #2 ==========
+
+========== MC1-CPU-2.5 #1 ==========
+"Product : MC1-CPU-2.5"
+"Serial# : 0001"
+"Orgnztn : US ARMY NATIONAL GUARD (LAKOTA)"
+========== MC1-CPU-2.5 #1 ==========
+
+========== MC1-CPU-2.5 #2 ==========
+"Product : MC1-CPU-2.5"
+"Serial# : 0002"
+"Orgnztn : US ARMY NATIONAL GUARD (LAKOTA)"
+========== MC1-CPU-2.5 #2 ==========
+
+========== QUARK #1 ==========
+"Product : QUARK"
+"Serial# : 460001"
+"Orgnztn : Ireland Air Corps (IAC)"
+========== QUARK #1 ==========
+
+========== QUARK #2 ==========
+"Product : QUARK"
+"Serial# : 460004"
+"Orgnztn : Colorado Fire"
+========== QUARK #2 ==========
+
