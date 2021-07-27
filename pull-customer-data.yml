@@ -4,14 +4,11 @@
   connection: local
   gather_facts: false
   vars:
-    JIRA:
-      basicauth: "{{ lookup('env', 'JIRA_BASICAUTH') }}"
-      workspaceID: "{{ lookup('env', 'JIRA_WORKSPACEID') }}"
-    # For each product we need...
-    #   ProdID (ObjectTypeID          : the ID of the object) 
-    #   NameID (ObjectTypeAttributeID : the ID of the attribute of the object) 
-    #   OrgID  (ObjectTypeAttributeID : the ID of the attribute of the object)
     ProductInfo:
+      # For each product we need...
+      #   ProdID (ObjectTypeID          : the ID of the object) 
+      #   NameID (ObjectTypeAttributeID : the ID of an attribute of the object) 
+      #   OrgID  (ObjectTypeAttributeID : the ID of an attribute of the object)
       ATOM: 
         ProdID: 22
         NameID: 308
@@ -20,103 +17,86 @@
         ProdID: 12
         NameID: 86
         OrgID: 90
-#      ARS-600: 
-#        ProdID: 35 
-#        NameID: 423
-#        OrgID: 427
-#      ARS-500: 
-#        ProdID: 8
-#        NameID: 37
-#        OrgID: 51
-#      ARS-400: 
-#        ProdID: 14 
-#        NameID: 108
-#        OrgID: 112 
-#      ARS-Redbox: 
-#        ProdID: 34
-#        NameID: 404
-#        OrgID: 408
-#      ARS-KB-R: 
-#        ProdID: 16
-#        NameID: 130
-#        OrgID: 134
-#      ARS-KB-H: 
-#        ProdID: 17
-#        NameID: 141
-#        OrgID: 145
-#      GETAC F110: 
-#        ProdID: 28
-#        NameID: 359
-#        OrgID: 480
-#      PAN-GCS: 
-#        ProdID: 29
-#        NameID: 363
-#        OrgID: 479
-#      NUC-GCS: 
-#        ProdID: 30
-#        NameID: 367
-#        OrgID: 478
-#      RP-1: 
-#        ProdID: 31
-#        NameID: 375
-#        OrgID: 379
-#      MC1-CPU-25: 
-#        ProdID: 32
-#        NameID: 387
-#        OrgID: 391
-#      EARTH-QUARK: 
-#        ProdID: 33
-#        NameID: 399
-#        OrgID: 477
+      ARS-600: 
+        ProdID: 35 
+        NameID: 423
+        OrgID: 427
+      ARS-500: 
+        ProdID: 8
+        NameID: 37
+        OrgID: 51
+      ARS-400: 
+        ProdID: 14 
+        NameID: 108
+        OrgID: 112 
+      ARS-Redbox: 
+        ProdID: 34
+        NameID: 404
+        OrgID: 408
+      ARS-KB-R: 
+        ProdID: 16
+        NameID: 130
+        OrgID: 134
+      ARS-KB-H: 
+        ProdID: 17
+        NameID: 141
+        OrgID: 145
+      GETAC-F110: 
+        ProdID: 28
+        NameID: 359
+        OrgID: 480
+      PAN-GCS: 
+        ProdID: 29
+        NameID: 363
+        OrgID: 479
+      NUC-GCS: 
+        ProdID: 30
+        NameID: 367
+        OrgID: 478
+      RP-1: 
+        ProdID: 31
+        NameID: 375
+        OrgID: 379
+      MC1-CPU-25: 
+        ProdID: 32
+        NameID: 387
+        OrgID: 391
+      EARTH-QUARK: 
+        ProdID: 33
+        NameID: 399
+        OrgID: 477
   tasks:
-  # Explicitly uses v1 of the REST API...may need updating in the future
-  # Explicitly uses resultsPerPage = 100...may need updating in the future when we sell stuff like hotcakes
-  - name: Find all object IDs for ATOMs
-    uri:
-      headers:
-        Authorization: "Basic {{ JIRA.basicauth }}"
-        Accept: 'application/json'
-        X-ExperimentalApi: 'opt-in'  #needed for certain exp APIs
-      url: 'https://api.atlassian.com/jsm/insight/workspace/{{ JIRA.workspaceID }}/v1/object/navlist/iql'
-      body_format: json
-#        "iql": "objectType = \"{{ item.key }}\" order by Name",
-#        "objectTypeId": "{{ item.value }}",
-#        "iql": "objectType = \"ATOM\" AND objectTypeId = 4841 order by Name",
-#        "iql": "objectType = \"ATOM\" AND Name like \"16036\"",
-#        "iql": "objectType = \"ION\" AND Name like \"11000\"",
-      body: '{
-        "iql": "objectType = \"{{ item.key }}\"",
-        "objectTypeId": "{{ item.value.ProdID }}",
-        "page": 1,
-        "resultsPerPage": 1000,
-        "includeAttributes": true,
-        "attributesToDisplay": {
-          "attributesToDisplayIds": [ 
-            "{{ item.value.NameID }}",
-            "{{ item.value.OrgID }}"
-          ]
-        },
-        "objectSchemaId": "4"
-      }'
-      method: POST
-#    loop: "{{ ObjectTypeIDs | dict2items }}"
-#    loop: "{{ ProductInfo | dict2items }}"
+  - name: Find info for all products
+    include_tasks: get-product.yml
     loop: "{{ lookup('dict', ProductInfo) }}"
-    register: object_IDs
+    loop_control:
+      loop_var: outer_item
+    register: product_IDs
 
-  - name: Debug ALL object IDs
-    debug:
-      #msg: "{{ item.attributes.0.objectAttributeValues.0.displayValue }}"
-      #msg: "{{ item.json.objectEntries.0.attributes.objectAttributeValues.displayValue }}"
-      #msg: "{{ item.json.objectEntries.0.attributes.0.objectAttributeValues.0.displayValue }}"   # gets 1st item from each API call
-      msg: "{{ item.json.objectEntries.0.attributes.0.objectAttributeValues.0.displayValue }}"
-#      msg:
-#      - "Product : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
-#      - "Serial# : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[2] }}"
-#      - "Orgnztn : {{ item.attributes.1.objectAttributeValues.0.displayValue }}"
-#    loop: "{{ object_IDs.results.json.objectEntries }}"
-    #loop: "{{ object_IDs.results | product(object_IDs.results.json.objectEntries) | list}}"
-    loop: "{{ object_IDs.results }}"
+#  - name: Get number of each product
+#    debug:
+#      #- "There are {{ item.0.json.totalFilterCount }} {{ item.1.key }}s in the field"
+#      #msg: "{{ item.json.totalFilterCount }}"
+#      msg: "{{ item.json.totalFilterCount }}"
+#    #loop: "{{ product_IDs.results }}"
+#    loop: "{{ product_IDs.results | product(product_IDs.results.json.objectEntries) | list}}"
 #    loop_control:
-#      label: "{{ item.attributes.0.objectAttributeValues.0.displayValue }}"
+#      label: "{{ item.json.objectEntries.0.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
 
+#  - name: Debug ALL object IDs
+#    debug:
+##      #msg: "{{ item.attributes.0.objectAttributeValues.0.displayValue }}"
+##      #msg: "{{ item.json.objectEntries.0.attributes.objectAttributeValues.displayValue }}"
+##      #msg: "{{ item.json.objectEntries.0.attributes.0.objectAttributeValues.0.displayValue }}"   # gets 1st item from each API call
+##      #msg: "{{ item.json.objectEntries.0.attributes.0.objectAttributeValues.0.displayValue }}"
+##      msg: "{{ item.json }}"
+#      msg:
+#      - "Product : {{ item.1.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
+#      - "Serial# : {{ item.1.attributes.0.objectAttributeValues.0.displayValue.split()[2] }}"
+#      - "Orgnztn : {{ item.1.attributes.1.objectAttributeValues.0.displayValue }}"
+##    loop: "{{ product_IDs.results.json.objectEntries }}"
+#    loop: "{{ product_IDs.results | product(product_IDs.results.0.json.objectEntries) | list}}"
+##    loop: "{{ product_IDs.results }}"
+#    loop_control:
+#      #label: "{{ item.1.attributes.0.objectAttributeValues.0.displayValue }}"
+#      label: "{{ item.1.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"

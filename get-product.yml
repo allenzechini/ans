@@ -1,0 +1,45 @@
+---
+- name: Find product name and owner
+  uri:
+    headers:
+      Authorization: "Basic {{ lookup('env', 'JIRA_BASICAUTH') }}"
+      Accept: 'application/json'
+    url: "https://api.atlassian.com/jsm/insight/workspace/{{ lookup('env', 'JIRA_WORKSPACEID') }}/v1/object/navlist/iql"
+    body_format: json
+    body: '{
+      "iql": "objectType = \"{{ outer_item.key }}\"",
+      "objectTypeId": "{{ outer_item.value.ProdID }}",
+      "page": 1,
+      "resultsPerPage": 2,
+      "includeAttributes": true,
+      "attributesToDisplay": {
+        "attributesToDisplayIds": [ 
+          "{{ outer_item.value.NameID }}",
+          "{{ outer_item.value.OrgID }}"
+        ]
+      },
+      "objectSchemaId": "4"
+    }'
+    method: POST
+  register: product_info
+
+#- name: Print product info
+#  debug:
+#    msg:
+#    - "Product : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
+#    - "Serial# : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[2] }}"
+#    - "Orgnztn : {{ item.attributes.1.objectAttributeValues.0.displayValue }}"
+#  loop: "{{ product_info.json.objectEntries }}"
+#  loop_control:
+#    label: "{{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
+
+- name: Write product info to file
+  copy:
+    dest: "product_info.txt"
+    content: |
+      "Product : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
+      "Serial# : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[2] }}"
+      "Orgnztn : {{ item.attributes.1.objectAttributeValues.0.displayValue }}"
+  loop: "{{ product_info.json.objectEntries }}"
+  loop_control:
+    label: "{{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
