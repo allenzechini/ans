@@ -10,7 +10,7 @@
       "iql": "objectType = \"{{ outer_item.key }}\"",
       "objectTypeId": "{{ outer_item.value.ProdID }}",
       "page": 1,
-      "resultsPerPage": 2,
+      "resultsPerPage": 600,
       "includeAttributes": true,
       "attributesToDisplay": {
         "attributesToDisplayIds": [ 
