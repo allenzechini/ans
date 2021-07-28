@@ -79,34 +79,3 @@
       loop_var: outer_item
     register: product_IDs
 
-#  - name: Print product info to stdout
-#    debug:
-#      msg: "{{ product_IDs }}"
-
-#  - name: Get number of each product
-#    debug:
-#      #- "There are {{ item.0.json.totalFilterCount }} {{ item.1.key }}s in the field"
-#      #msg: "{{ item.json.totalFilterCount }}"
-#      msg: "{{ item.json.totalFilterCount }}"
-#    #loop: "{{ product_IDs.results }}"
-#    loop: "{{ product_IDs.results | product(product_IDs.results.json.objectEntries) | list}}"
-#    loop_control:
-#      label: "{{ item.json.objectEntries.0.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
-
-#  - name: Debug ALL object IDs
-#    debug:
-##      #msg: "{{ item.attributes.0.objectAttributeValues.0.displayValue }}"
-##      #msg: "{{ item.json.objectEntries.0.attributes.objectAttributeValues.displayValue }}"
-##      #msg: "{{ item.json.objectEntries.0.attributes.0.objectAttributeValues.0.displayValue }}"   # gets 1st item from each API call
-##      #msg: "{{ item.json.objectEntries.0.attributes.0.objectAttributeValues.0.displayValue }}"
-##      msg: "{{ item.json }}"
-#      msg:
-#      - "Product : {{ item.1.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
-#      - "Serial# : {{ item.1.attributes.0.objectAttributeValues.0.displayValue.split()[2] }}"
-#      - "Orgnztn : {{ item.1.attributes.1.objectAttributeValues.0.displayValue }}"
-##    loop: "{{ product_IDs.results.json.objectEntries }}"
-#    loop: "{{ product_IDs.results | product(product_IDs.results.0.json.objectEntries) | list}}"
-##    loop: "{{ product_IDs.results }}"
-#    loop_control:
-#      #label: "{{ item.1.attributes.0.objectAttributeValues.0.displayValue }}"
-#      label: "{{ item.1.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"

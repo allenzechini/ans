@@ -23,22 +23,6 @@
     method: POST
   register: product_info
 
-#- name: Write product info to file
-#  blockinfile:
-#    path: /home/ansible/projects/ans/product_info.txt
-#    state: present
-#    marker: "{mark}"
-#    marker_begin: "========== {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }} #{{ ansible_loop.index }} =========="
-#    marker_end: "========== {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }} #{{ ansible_loop.index }} ==========\n"
-#    block: |
-#      "Product : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
-#      "Serial# : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[2] }}"
-#      "Orgnztn : {{ item.attributes.1.objectAttributeValues.0.displayValue }}"
-#  loop: "{{ product_info.json.objectEntries }}"
-#  loop_control:
-#    extended: true
-#    label: "{{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
-
 - name: Write product info to file
   # Format of line = <Product name> #<Product number> | <serial #> | <Org>
   lineinfile:
