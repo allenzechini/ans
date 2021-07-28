@@ -1857,3 +1857,10 @@ QUARK #5|460010|Oakland Police Helicopter Unit
 QUARK #6|460011|Churchill Navigation
 QUARK #7|460015|Churchill Navigation
 QUARK #8|460016|Churchill Navigation
+ATOM #491|160511|Churchill Navigation
+ATOM #492|16322|Churchill Navigation
+ATOM #493|16338|Churchill Navigation
+ATOM #494|DEMO|Churchill Navigation
+ATOM #495|IVAN|KABC-TV - Los Angeles - ABC 7
+ATOM #496|LOANER|Churchill Internal
+ATOM #497|WS2|Churchill Navigation
