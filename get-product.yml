@@ -23,43 +23,29 @@
     method: POST
   register: product_info
 
-#- name: Print product info
-#  debug:
-#    msg:
-#    - "Product : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
-#    - "Serial# : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[2] }}"
-#    - "Orgnztn : {{ item.attributes.1.objectAttributeValues.0.displayValue }}"
-#  loop: "{{ product_info.json.objectEntries }}"
-#  loop_control:
-#    label: "{{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
-
-
-### Creates new file each time, overwriting previous entries
 #- name: Write product info to file
-#  copy:
-#    dest: "product_info.txt"
-#    content: |
+#  blockinfile:
+#    path: /home/ansible/projects/ans/product_info.txt
+#    state: present
+#    marker: "{mark}"
+#    marker_begin: "========== {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }} #{{ ansible_loop.index }} =========="
+#    marker_end: "========== {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }} #{{ ansible_loop.index }} ==========\n"
+#    block: |
 #      "Product : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
 #      "Serial# : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[2] }}"
 #      "Orgnztn : {{ item.attributes.1.objectAttributeValues.0.displayValue }}"
 #  loop: "{{ product_info.json.objectEntries }}"
 #  loop_control:
+#    extended: true
 #    label: "{{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
 
 - name: Write product info to file
-  blockinfile:
+  # Format of line = <Product name> #<Product number> | <serial #> | <Org>
+  lineinfile:
     path: /home/ansible/projects/ans/product_info.txt
     state: present
-    marker: "{mark}"
-    marker_begin: "========== {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }} #{{ ansible_loop.index }} =========="
-    marker_end: "========== {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }} #{{ ansible_loop.index }} ==========\n"
-    block: |
-      "Product : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
-      "Serial# : {{ item.attributes.0.objectAttributeValues.0.displayValue.split()[2] }}"
-      "Orgnztn : {{ item.attributes.1.objectAttributeValues.0.displayValue }}"
+    line: "{{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }} #{{ ansible_loop.index }}|{{ item.attributes.0.objectAttributeValues.0.displayValue.split()[2] }}|{{ item.attributes.1.objectAttributeValues.0.displayValue }}"
   loop: "{{ product_info.json.objectEntries }}"
   loop_control:
     extended: true
     label: "{{ item.attributes.0.objectAttributeValues.0.displayValue.split()[0] }}"
-    #index_var: product_number
-    #index_var: "{{ ansible_loop.index }}"
