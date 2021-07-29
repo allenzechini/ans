@@ -15,6 +15,7 @@
          }'
       url: "{{ lookup('env', 'ANSBL_WEBHOOK') }}"
     when: ansible_hostname == 'vansibl401ubu'
+    no_log: true
 
   tasks:
   - name: Get list of failed services
@@ -48,3 +49,4 @@
       url: "{{ lookup('env', 'ANSBL_WEBHOOK') }}"
     loop: "{{ failed_service_names.msg }}"
     when: '"failed" in failed_services.stdout'
+    no_log: true
