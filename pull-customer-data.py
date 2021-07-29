@@ -2,14 +2,14 @@ import os
 import json
 import requests
 
-# ID vars
+# URL vars
 basic_auth  = os.environ.get('JIRA_BASICAUTH')
 workspaceID = os.environ.get('JIRA_WORKSPACEID')
+version     = "1"
 
-#ObjectIDs   = {
-#  "ATOM": "22"
-#}
-
+#----------------------------------------------------------------------
+# Product IDs
+#
 # Instead of using dictionaries, thinking of using tuples, like this...
 # ATOM = ("ATOM", 22, 308, 312)
 # Where:
@@ -17,25 +17,44 @@ workspaceID = os.environ.get('JIRA_WORKSPACEID')
 #   22     = product_id
 #   308    = name_id
 #   312    = org_id
+#
+# For easier calls, use a single dicitonary of tuples
+#----------------------------------------------------------------------
+ProductIDs = {
+  "ATOM": (22, 308, 312),
+  "ION": (12, 86, 90),
+  "ARS-600": (35, 423, 427),
+  "ARS-500": (8, 37, 51),
+  "ARS-400": (14, 108, 112),
+  "ARS-Redbox": (34, 404, 408),
+  "ARS-KB-R": (16, 130, 134),
+  "ARS-KB-H": (17, 141, 145),
+  "GETAC-F110": (28, 359, 480),
+  "PAN-GCS": (29, 363, 479),
+  "NUC-GCS": (30, 367, 478),
+  "RP-1": (31, 375, 379),
+  "MC1-CUP-25": (32, 387, 391),
+  "EARTH-QUARK": (33, 399, 477)
+}
 
-url = "https://api.atlassian.com/jsm/insight/workspace/{workspaceId}/v{version}/object/navlist/iql"
+url = f"https://api.atlassian.com/jsm/insight/workspace/{workspaceID}/v{version}/object/navlist/iql"
 headers = {
   "Accept": "application/json",
-  "Authorization": "Basic " + basic_auth,
+  "Authorization": f"Basic {basic_auth}",
   "Content-Type": "application/json"
 }
 
-def get_products(product="ATOM", product_id="22", name_id="308", org_id="312"):
+def get_product(product_name, product_id, name_id, org_id):
   payload = json.dumps({
-    "iql": "objectType = " + product,
+    "iql": f"objectType = {product_name}",
     "objectTypeId": product_id,
     "page": 1,
     "resultsPerPage": 600,
-    "includeAttributes": true,
+    "includeAttributes": "true",
     "attributesToDisplay": {
       "attributesToDisplayIds": [
         name_id,
-        ord_id
+        org_id
       ]
     },
     "objectSchemaId": "4"
@@ -50,9 +69,9 @@ def get_products(product="ATOM", product_id="22", name_id="308", org_id="312"):
 
   print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
 
-#def main():
-#  call API
-#  print to file
-#
-#if __name__ == '__main__':
-#  main()
+def main():
+  for key in ProductIDs:
+    get_product(key, *ProductIDs[key])
+  
+if __name__ == '__main__':
+  main()
