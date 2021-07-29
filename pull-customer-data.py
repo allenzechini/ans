@@ -7,19 +7,7 @@ basic_auth  = os.environ.get('JIRA_BASICAUTH')
 workspaceID = os.environ.get('JIRA_WORKSPACEID')
 version     = "1"
 
-#----------------------------------------------------------------------
-# Product IDs
-#
-# Instead of using dictionaries, thinking of using tuples, like this...
-# ATOM = ("ATOM", 22, 308, 312)
-# Where:
-#   "ATOM" = name of product
-#   22     = product_id
-#   308    = name_id
-#   312    = org_id
-#
-# For easier calls, use a single dicitonary of tuples
-#----------------------------------------------------------------------
+# Products & IDs
 ProductIDs = {
   "ATOM": (22, 308, 312),
   "ION": (12, 86, 90),
@@ -33,7 +21,7 @@ ProductIDs = {
   "PAN-GCS": (29, 363, 479),
   "NUC-GCS": (30, 367, 478),
   "RP-1": (31, 375, 379),
-  "MC1-CUP-25": (32, 387, 391),
+  "MC1-CPU-25": (32, 387, 391),
   "EARTH-QUARK": (33, 399, 477)
 }
 
@@ -44,7 +32,7 @@ headers = {
   "Content-Type": "application/json"
 }
 
-def get_product(product_name, product_id, name_id, org_id):
+def get_product(fh, product_name, product_id, name_id, org_id):
   payload = json.dumps({
     "iql": f"objectType = {product_name}",
     "objectTypeId": product_id,
@@ -69,21 +57,19 @@ def get_product(product_name, product_id, name_id, org_id):
 
   # Parse response
   r_json = response.json()
-  #total_products = r_json["totalFilterCount"]
-  #for i in range(total_products + 1):
   for i in range(len(r_json["objectEntries"])):
-    name = r_json["objectEntries"][i]["attributes"][0]["objectAttributeValues"][0]["displayValue"]
-    prod = name.split()[0]
+    name   = r_json["objectEntries"][i]["attributes"][0]["objectAttributeValues"][0]["displayValue"]
+    org    = r_json["objectEntries"][i]["attributes"][1]["objectAttributeValues"][0]["displayValue"]
+    prod   = name.split()[0]
     serial = name.split()[2]
-    org = r_json["objectEntries"][i]["attributes"][1]["objectAttributeValues"][0]["displayValue"]
-    #print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
-    data = f"{prod}|{serial}|{org}"
-    print(data)
+    data   = f"{prod}|{serial}|{org}"
+    fh.write(f"{data}\n")
 
 def main():
-  for key in ProductIDs:
-    # Use dict key as product_name, dict values for rest of the args
-    get_product(key, *ProductIDs[key])
+  with open('product_info.txt.python', 'w') as f:
+    for key in ProductIDs:
+      # Use dict key as product_name, dict values for rest of the args
+      get_product(f, key, *ProductIDs[key])
   
 if __name__ == '__main__':
   main()
