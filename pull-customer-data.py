@@ -67,10 +67,22 @@ def get_product(product_name, product_id, name_id, org_id):
     headers=headers
   )
 
-  print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
+  # Parse response
+  r_json = response.json()
+  #total_products = r_json["totalFilterCount"]
+  #for i in range(total_products + 1):
+  for i in range(len(r_json["objectEntries"])):
+    name = r_json["objectEntries"][i]["attributes"][0]["objectAttributeValues"][0]["displayValue"]
+    prod = name.split()[0]
+    serial = name.split()[2]
+    org = r_json["objectEntries"][i]["attributes"][1]["objectAttributeValues"][0]["displayValue"]
+    #print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
+    data = f"{prod}|{serial}|{org}"
+    print(data)
 
 def main():
   for key in ProductIDs:
+    # Use dict key as product_name, dict values for rest of the args
     get_product(key, *ProductIDs[key])
   
 if __name__ == '__main__':
