@@ -60,9 +60,15 @@ async def get_product_info():
             post_tasks.append(post(session, key, *ProductIDs[key]))
         # execute them all simultaneously
         resp = await asyncio.gather(*post_tasks)
+        
+        # Return only one set instead of nested arrays
+        allData = []
 
-        with open('r_product_info.txt.python', 'w') as f:
-            f.write(json.dumps(resp))
+        for equipmentType in resp:
+            allData += equipmentType
+
+        with open('customer_data.json', 'w') as f:
+            f.write(json.dumps(allData))
 
 
 # Setup posts
@@ -94,6 +100,7 @@ async def post(session, product_name, product_id, name_id, org_id):
     ) as response:
         # Parse json from response
         r_json = await response.json()
+        
         # Temp storage for object entry processing
         inventory_store = []
 
