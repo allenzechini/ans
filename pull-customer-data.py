@@ -1,6 +1,8 @@
 import os
 import json
 import requests
+import time
+
 
 # URL vars
 basic_auth  = os.environ.get('JIRA_BASICAUTH')
@@ -66,10 +68,12 @@ def get_product(fh, product_name, product_id, name_id, org_id):
     fh.write(f"{data}\n")
 
 def main():
+  start = time.perf_counter()
   with open('product_info.txt.python', 'w') as f:
     for key in ProductIDs:
       # Use dict key as product_name, dict values for rest of the args
       get_product(f, key, *ProductIDs[key])
+  print(f'Completed execution in {time.perf_counter() - start} seconds')
   
 if __name__ == '__main__':
   main()
