@@ -65,8 +65,8 @@ class EquipmentList extends React.PureComponent {
         super(props);
         this.state = {
             filteredData: this.props.data,
-            filterSearch: null,
-            filterType: null
+            filterSearch: "",
+            filterType: ""
         };
         this.onSearch = this.onSearch.bind(this);
         this.onSelectFilter = this.onSelectFilter.bind(this);
@@ -117,11 +117,11 @@ class EquipmentList extends React.PureComponent {
             this.setState({ filteredData: allData })
         }
 
-        const typeMatches = this.props.data.filter(item => item[0] == this.state.filterType)
+        const typeMatches = this.state.filterType == "" ? this.props.data : this.props.data.filter(item => item[0] == this.state.filterType)
 
         console.log(`typeMatches: ${typeMatches.length}`)
 
-        const searchMatches = this.state.filterSearch == null ? typeMatches :
+        const searchMatches = this.state.filterSearch == "" ? typeMatches :
             typeMatches.filter(row => {
                 // So that search will work with all fields, split each field into lowercase words and then match against array
                 // Return true for the ENTIRE row if any fields have a match
