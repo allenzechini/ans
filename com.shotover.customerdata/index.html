@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- DEV ONLY: Babel JSX compiler  -->
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+
+<body class="bg-dark">
+    <h1 class="text-light text-center mb-4">CUSTOMER EQUIPMENT</h1>
+
+    <!-- Used for React filter . . . don't change ID -->
+    <div class="d-flex justify-content-center mb-4 text-light">
+        <div class="form-group col-3">
+            <label for="filter-type">Filter:</label>
+            <select class="form-control" name="filter-type" id="filter-type">
+                <option value=""></option>
+                <option value="ATOM">ATOM</option>
+                <option value="ION">ION</option>
+                <option value="QUARK">QUARK</option>
+                <option value="ARS-600">ARS-600</option>
+                <option value="ARS-500">ARS-500</option>
+                <option value="ARS-400">ARS-400</option>
+                <option value="ARS-Redbox">ARS-Redbox</option>
+                <option value="ARS-KB-RARS-KB">ARS-KB-RARS-KB</option>
+                <option value="ARS-KB-HARS-KB">ARS-KB-HARS-KB</option>
+                <option value="GETAC-F110">GETAC-F110</option>
+                <option value="PAN-GCS">PAN-GCS</option>
+                <option value="NUC-GCS">NUC-GCS</option>
+                <option value="RP-1">RP-1</option>
+                <option value="MC1-CPU-2MC1-CPU5">MC1-CPU-2MC1-CPU5</option>
+                <option value="EARTH-QUARK">EARTH-QUARK</option>
+            </select>
+        </div>
+        <div class="form-group col-3">
+            <label for="filter-input" class="">Search:</label>
+            <input id="filter-input" class="form-control" type="text">
+        </div>
+    </div>
+
+    <div id="root" class="container"></div>
+
+    <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+    <!-- Load our React component. -->
+    <script src="equipment_list.jsx" type="text/babel"></script>
+</body>
+
+</html>
