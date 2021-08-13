@@ -119,14 +119,15 @@ class EquipmentList extends React.PureComponent {
 
         const typeMatches = this.state.filterType == "" ? this.props.data : this.props.data.filter(item => item[0] == this.state.filterType)
 
-        console.log(`typeMatches: ${typeMatches.length}`)
+        // console.log(`typeMatches: ${typeMatches.length}`)
 
         const searchMatches = this.state.filterSearch == "" ? typeMatches :
             typeMatches.filter(row => {
                 // So that search will work with all fields, split each field into lowercase words and then match against array
                 // Return true for the ENTIRE row if any fields have a match
                 for (var item in row) {
-                    if (row[item].toLowerCase().split(" ").filter(word => word.match(this.state.filterSearch.toLowerCase())).length)
+                    // if (row[item].toLowerCase().split(" ").filter(word => word.match(this.state.filterSearch.toLowerCase())).length)
+                    if (row[item].toLowerCase().match(this.state.filterSearch.toLowerCase()))
                     return true
                 }
                 return false
