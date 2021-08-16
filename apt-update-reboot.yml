@@ -16,7 +16,7 @@
       body_format: json
       body: 
         '{
-            "text": "{{ ansible_date_time.iso8601_micro }} | Running apt-update.yml"
+            "text": "{{ ansible_date_time.iso8601_micro }} | Running apt-update-reboot.yml"
          }'
       url: "{{ lookup('env', 'ANSBL_WEBHOOK') }}"
     when: ansible_hostname == 'vansibl401ubu'
@@ -63,9 +63,18 @@
       body_format: json
       body: 
         '{
-            "text": "{{ ansible_date_time.iso8601_micro }} | Host {{ inventory_hostname }} needs a reboot!"
+            "text": "{{ ansible_date_time.iso8601_micro }} | Host {{ inventory_hostname }} is being rebooted!"
          }'
       url: "{{ lookup('env', 'ANSBL_WEBHOOK') }}"
     when: reboot_required_file.stat.exists
     no_log: true
 
+  - name: Reboot the server
+    reboot:
+      msg:  "Reboot initiated by Ansible due to kernel updates"
+      connect_timeout: 5
+      reboot_timeout: 300
+      pre_reboot_delay: 0
+      post_reboot_delay: 30
+      test_command: uptime
+    when: reboot_required_file.stat.exists
