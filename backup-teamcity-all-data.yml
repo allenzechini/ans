@@ -1,0 +1,31 @@
+---
+- name: Backup TeamCity server (ZEUS), all data
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    TC_IP: '192.168.11.45'
+
+  pre_tasks:
+  - name: Send notification to Slack that playbook is running
+    uri:
+      headers:
+        Content-Type: 'application/json'
+      method: POST
+      body_format: json
+      body: 
+        '{
+            "text": "{{ ansible_date_time.iso8601_micro }} | Running backup-teamcity-all-data.yml"
+         }'
+      url: "{{ lookup('env', 'ANSBL_WEBHOOK') }}"
+    when: ansible_hostname == 'vansibl401ubu'
+
+  tasks:
+  - name: Start a backup of TeamCity server (ZEUS), all data
+    uri:
+      headers:
+        Authorization: "Bearer {{ lookup('env', 'TEAMCITY_APITOKEN') }}"
+        Content-Type: 'application/json'
+      method: POST
+      url: "http://{{ TC_IP }}/app/rest/server/backup?includeConfigs=true&includeDatabase=true&includeBuildLogs=true&fileName=Zeus_Backup_Ansible"
+    no_log: true
