@@ -1,0 +1,48 @@
+---
+- name: Backup TeamCity server data (ZEUS)
+  hosts: localhost
+  connection: local
+
+  pre_tasks:
+  - name: Send notification to Slack that playbook is running
+    uri:
+      headers:
+        Content-Type: 'application/json'
+      method: POST
+      body_format: json
+      body: 
+        '{
+            "text": "{{ ansible_date_time.iso8601_micro }} | Running check-teamcity-backup.yml"
+         }'
+      url: "{{ lookup('env', 'ANSBL_WEBHOOK') }}"
+    when: ansible_hostname == 'vansibl401ubu'
+
+  tasks:
+  - name: Check TeamCity server (ZEUS) backup status
+    uri:
+      headers:
+        Content-Type: 'application/json'
+      method: GET
+      url: http://192.168.11.45/app/rest/server/backup
+    register: backup_status
+
+  - name: Debug backup_status
+    debug:
+      #msg: "Current backup status : {{ backup"
+      var: {{ backup_status }}
+
+
+#  - name: If reboot required, post notification to Slack
+#    uri:
+#      headers:
+#        Content-Type: 'application/json'
+#      method: POST
+#      body_format: json
+#      body: 
+#        '{
+#            "text": "{{ ansible_date_time.iso8601_micro }} | Host {{ inventory_hostname }} needs a reboot!"
+#         }'
+#      url: "{{ lookup('env', 'ANSBL_WEBHOOK') }}"
+#    when: reboot_required_file.stat.exists
+#    no_log: true
+#
