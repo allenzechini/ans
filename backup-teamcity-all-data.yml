@@ -27,5 +27,5 @@
         Authorization: "Bearer {{ lookup('env', 'TEAMCITY_APITOKEN') }}"
         Content-Type: 'application/json'
       method: POST
-      url: "http://{{ TC_IP }}/app/rest/server/backup?includeConfigs=true&includeDatabase=true&includeBuildLogs=true&fileName=Zeus_Backup_Ansible"
+      url: "http://{{ TC_IP }}/app/rest/server/backup?includeConfigs=true&includeDatabase=true&includeBuildLogs=true&fileName=Zeus_Automated_Backup_all"
     no_log: true
