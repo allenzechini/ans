@@ -8,18 +8,30 @@ compare_configs() {
   tail -n +2 /tmp/${C1} > /tmp/${C1}.1d
   tail -n +2 /tmp/${C2} > /tmp/${C2}.1d
 
-  CHANGES=$(diff ${C1}.1d ${C2}.1d)
+  diff ${C1}.1d ${C2}.1d > /dev/null 2>&1
   if [ $? != 0 ];then
-    notify_slack_of_changes "${CHANGES}"
+    notify_slack_of_changes
     push_new_config "${C1}"
   fi
   rm /tmp/${C1}.1d /tmp/${C2}.1d
 }
 
 notify_slack_of_changes() {
-  CHANGES=$1
   TIMESTAMP=$(date "+%Y-%m-%dT%H:%M:%S.%6NZ")
-  post_slack_msg "'${TIMESTAMP}' | Router config has been updated:\n\n'${CHANGES}'"
+  curl \
+    -H "Content-type: application/json" \
+    --data '{
+      "channel": "ansible-notifications",
+      "blocks": [{
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "'${TIMESTAMP}' | Router config has been updated"
+        }
+      }]
+    }' \
+    -X POST ${ANSBL_WEBHOOK} > /dev/null 2>&1 
+  sleep 1
 }
 
 push_new_config() {
@@ -27,32 +39,26 @@ push_new_config() {
 
   cd ${REPO_DIR}
   cp /tmp/${NEW_CONFIG} .
-  git add ${NEW_CONFIG}
-  git commit -m "Changes made to mikrotik.conf"
-  git push origin
+  git add ${NEW_CONFIG}; git commit -m "Changes made to mikrotik.conf"; git push origin
   notify_slack_of_push
 }
 
 notify_slack_of_push() {
   TIMESTAMP=$(date "+%Y-%m-%dT%H:%M:%S.%6NZ")
-  post_slack_msg "'${TIMESTAMP}' | Updated router config has been committed"
-}
-
-post_slack_msg() {
-  MSG=$1
   curl \
     -H "Content-type: application/json" \
     --data '{
-              "channel": "ansible-notifications",
-              "blocks": [{
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "'${MSG}'"
-                }
-              }]
-            }' \
-    -X POST ${ANSBL_WEBHOOK} > /dev/null 2>&1
+      "channel": "ansible-notifications",
+      "blocks": [{
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "'${TIMESTAMP}' | Updated router config has been committed"
+        }
+      }]
+    }' \
+    -X POST ${ANSBL_WEBHOOK} > /dev/null 2>&1 
+  sleep 1
 }
 
 # Vars
@@ -64,13 +70,7 @@ PREVIOUS_CONFIG=mikrotik.conf
 
 ### MAIN ###
 
-#if [ $(whoami) != '${SVC_ACCT}' ];then
-#  echo ""
-#  echo "This script must be run as ${SVC_ACCT} user"
-#  exit 1
-#fi
-#
 cd /tmp
-ssh ${SVC_ACCT}@${ROUTER} /export > ${CURRENT_CONFIG}
-compare_configs ${CURRENT_CONFIG} ${PREVIOUS_CONFIG}
+ssh ${SVC_ACCT}@${ROUTER} /export hide-sensitive > ${CURRENT_CONFIG}
+#compare_configs ${CURRENT_CONFIG} ${PREVIOUS_CONFIG}
 
