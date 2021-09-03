@@ -16,6 +16,24 @@ compare_configs() {
   rm ${C1} ${C1}.1d ${C2}.1d
 }
 
+notify_slack_of_run() {
+  TIMESTAMP=$(date "+%Y-%m-%dT%H:%M:%S.%6NZ")
+  curl \
+    -H "Content-type: application/json" \
+    --data '{
+      "channel": "ansible-notifications",
+      "blocks": [{
+        "type": "section",
+        "text": {
+          "type": "mrkdwn",
+          "text": "'${TIMESTAMP}' | Running check-router-config.sh"
+        }
+      }]
+    }' \
+    -X POST ${ANSBL_WEBHOOK} > /dev/null 2>&1 
+  sleep 1
+}
+
 notify_slack_of_changes() {
   TIMESTAMP=$(date "+%Y-%m-%dT%H:%M:%S.%6NZ")
   curl \
@@ -73,6 +91,7 @@ CURRENT_CONFIG=/tmp/mikrotik.conf.current
 
 ### MAIN ###
 
+notify_slack_of_run
 ssh ${SVC_ACCT}@${ROUTER} /export hide-sensitive > ${CURRENT_CONFIG}
 compare_configs ${CURRENT_CONFIG} ${PREVIOUS_CONFIG}
 
