@@ -3,7 +3,8 @@
   hosts: localhost
   connection: local
   vars:
-    TC_IP: '192.168.11.45'
+    #TC_IP: '192.168.11.45'
+    TC_IP: '192.168.11.96'
 
   pre_tasks:
   - name: Send notification to Slack that playbook is running

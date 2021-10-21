@@ -92,6 +92,6 @@ CURRENT_CONFIG=/tmp/mikrotik.conf.current
 ### MAIN ###
 
 notify_slack_of_run
-ssh ${SVC_ACCT}@${ROUTER} /export hide-sensitive > ${CURRENT_CONFIG}
+ssh -i /home/ansible/.ssh/robackup_rsa ${SVC_ACCT}@${ROUTER} /export hide-sensitive > ${CURRENT_CONFIG}
 compare_configs ${CURRENT_CONFIG} ${PREVIOUS_CONFIG}
 
